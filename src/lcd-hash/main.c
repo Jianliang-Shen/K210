@@ -10,6 +10,11 @@
 #include "sysctl.h"
 #include "ui.h"
 #include "wifi.h"
+
+corelock_t lock;
+uint8_t wifi_log[MAX_WIFI_LOG_SIZE];
+uint8_t wifi_log_clear_flag = 0;
+
 void hardware_init(void)
 {
     //init lcd pins
@@ -77,11 +82,39 @@ uint8_t start_page_operation(uint8_t *connect_server, uint8_t *pic_download)
 
 uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
 {
-    // if () //如果按下搜寻wifi的按钮
-    // {
-    //     //搜寻完毕后，连接按钮变正常
-    //     //draw_button;
-    // }
+    static uint8_t cur_idx = 1;
+
+    //如果按下搜寻wifi的按钮
+    if(8 < ft6236.touch_x && ft6236.touch_x < 156 &&
+       164 < ft6236.touch_y && ft6236.touch_y < 194)
+    {
+        //闪烁
+        draw_button(8, 164, 156, 194,
+                    2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
+                    "Search Wifi", BUTTON_CHAR_COLOR);
+
+        //搜寻wifi
+        wifi_send_cmd("AT+CWLAP\r\n");
+
+        //等待处理
+        sleep(2);
+        // corelock_lock(&lock);
+        // {
+        //     printf("wifi returns: %s\n", wifi_log);
+        // }
+        // corelock_unlock(&lock);
+
+        //打印wifi列表
+        cur_idx = 1;
+        draw_wifi_list(1, 1, wifi_log, 8, cur_idx);
+        wifi_log_clear_flag = 1;
+
+        //搜寻完毕后，按钮变正常
+        draw_button(8, 164, 156, 194,
+                    2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "Search Wifi", BUTTON_CHAR_COLOR);
+        draw_button(164, 164, 312, 194,
+                    2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "Connect", BUTTON_CHAR_COLOR);
+    }
     // if () //如果按下连接按钮
     // {
     //     //跳转到连接函数，绘制连接动画
@@ -91,6 +124,40 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
     //     //如果连接成功
     //     //打印连接成功的logo，在wifi后加上对勾
     // }
+
+    if(242 < ft6236.touch_x && ft6236.touch_x < 312 &&
+       24 < ft6236.touch_y && ft6236.touch_y < 86)
+    {
+        draw_button(242, 24, 312, 86,
+                    2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
+                    "up", BUTTON_CHAR_COLOR);
+        cur_idx--;
+        if(cur_idx < 1)
+        {
+            cur_idx = 8;
+        }
+        draw_wifi_list(1, 0, wifi_log, 8, cur_idx > 1 ? cur_idx : 1);
+        draw_button(242, 24, 312, 86,
+                    2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR,
+                    "up", BUTTON_CHAR_COLOR);
+    }
+
+    if(242 < ft6236.touch_x && ft6236.touch_x < 312 &&
+       94 < ft6236.touch_y && ft6236.touch_y < 156)
+    {
+        draw_button(242, 94, 312, 156,
+                    2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
+                    "down", BUTTON_CHAR_COLOR);
+        cur_idx++;
+        if(cur_idx > 8)
+        {
+            cur_idx = 1;
+        }
+        draw_wifi_list(1, 0, wifi_log, 8, cur_idx > 8 ? 8 : cur_idx);
+        draw_button(242, 94, 312, 156,
+                    2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR,
+                    "down", BUTTON_CHAR_COLOR);
+    }
     if(BACK_BUTTON_X1 < ft6236.touch_x && ft6236.touch_x < BACK_BUTTON_X2 &&
        BACK_BUTTON_Y1 < ft6236.touch_y && ft6236.touch_y < BACK_BUTTON_Y2)
     {
@@ -164,32 +231,36 @@ uint8_t error_operation()
 int core1_main(void *ctx)
 {
     char recv = 0, send = 0;
-    int state = 1;
-    uint64_t core = current_coreid();
+    int idx = 0;
+    //关闭透传模式
+    wifi_send_cmd("+++");
+
+    //设置wsp8266为wifi连接模式
+    wifi_send_cmd("AT+CWMODE_DEF=1\r\n");
 
     while(1)
     {
-        // printf("Core %ld say: Hello world\n", core);
-
+        //判断是否清空缓冲区数据
+        if(wifi_log_clear_flag == 1)
+        {
+            memset(wifi_log, '\0', 500);
+            idx = 0;
+            wifi_log_clear_flag = 0;
+        }
         /* 接收WIFI模块的信息 */
         if(uart_receive_data(UART_WIFI_NUM, &recv, 1))
         {
-            /* 发送WiFi的数据到USB串口显示 */
-            uart_send_data(UART_USB_NUM, &recv, 1);
-        }
-
-        /* 接收串口的信息，并发送给WiFi模块 */
-        if(uart_receive_data(UART_USB_NUM, &send, 1))
-        {
-            uart_send_data(UART_WIFI_NUM, &send, 1);
+            corelock_lock(&lock);
+            {
+                wifi_log[idx++] = recv;
+            }
+            corelock_unlock(&lock);
         }
     }
 }
 
 int main(void)
 {
-    uint64_t core = current_coreid();
-
     hardware_init();
     io_set_power();
     plic_init();
@@ -201,10 +272,7 @@ int main(void)
     wifi_module_init();
     register_core1(core1_main, NULL);
 
-    wifi_send_cmd_and_printf_log("+++");
-    wifi_send_cmd_and_printf_log("AT+CWMODE_DEF=1\r\n");
-    wifi_send_cmd_and_printf_log("AT+CWLAP\r\n");
-    wifi_send_cmd_and_printf_log("AT+CWJAP_DEF=\"jianliang\",\"95898063\"\r\n");
+    // wifi_send_cmd_and_printf_log("AT+CWJAP_DEF=\"jianliang\",\"95898063\"\r\n");
 
     uint8_t page_state = START_PAGE;
 

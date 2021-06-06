@@ -7,6 +7,103 @@
 #include "sysctl.h"
 #include "ui.h"
 
+void draw_wifi_list(uint8_t wifi_searched,
+                    uint8_t wifi_updated,
+                    uint8_t *info,
+                    char wifi_numbers,
+                    uint8_t choose_idx)
+{
+    static uint8_t str[8][20];
+
+    uint16_t y = 28, x = 14;
+    uint16_t column = -1, idx = 0, base = 0, base_updated = 0;
+    uint16_t length = strlen(info);
+
+    static uint8_t now_grey_idx;
+    static uint8_t drawed_flag = 0;
+
+    if(!wifi_searched)
+    {
+        return;
+    } else
+    {
+        if(wifi_updated)
+        {
+            //清空区域
+            draw_button(8, 24, 234, 156,
+                        2, BLACK, WHITE, "", BUTTON_CHAR_COLOR);
+            memset(str, '\0', sizeof(str));
+            drawed_flag = 0;
+
+            for(uint16_t i = 0; i < length; i++)
+            {
+                if(info[i] == '(')
+                {
+                    column++;
+                    if(column > 7)
+                    {
+                        break;
+                    }
+                    base = i;
+                    base_updated = 1;
+                }
+
+                if(base_updated)
+                {
+                    for(uint16_t j = base + 4; j < length; j++)
+                    {
+                        if(info[j] == '"')
+                        {
+                            break;
+                        } else
+                        {
+                            str[column][j - base - 4] = info[j];
+                        }
+                    }
+                    base_updated = 0;
+                }
+            }
+        }
+        uint8_t tmp_idx = now_grey_idx;
+        for(uint8_t i = 0; i < wifi_numbers; i++)
+        {
+
+            if(drawed_flag)
+            {
+                if(i == choose_idx - 1)
+                {
+                    uint32_t data = ((uint32_t)LIGHTGREY << 16) | (uint32_t)GREEN;
+                    lcd_set_area(10, y, 232, y + 14);
+                    tft_fill_data(&data, 222 * 14);
+                    lcd_draw_string(x, y, str[i], BLACK);
+
+                    now_grey_idx = i;
+                } else if(i == tmp_idx)
+                {
+                    uint32_t data = ((uint32_t)WHITE << 16) | (uint32_t)WHITE;
+                    lcd_set_area(10, y, 232, y + 14);
+                    tft_fill_data(&data, 222 * 14);
+                    lcd_draw_string(x, y, str[i], BLACK);
+                }
+            } else
+            {
+                if(i == choose_idx - 1)
+                {
+                    uint32_t data = ((uint32_t)LIGHTGREY << 16) | (uint32_t)GREEN;
+                    lcd_set_area(10, y, 232, y + 14);
+                    tft_fill_data(&data, 222 * 14);
+
+                    now_grey_idx = i;
+                }
+                lcd_draw_string(x, y, str[i], BLACK);
+            }
+
+            y += 16;
+        }
+        drawed_flag = 1;
+    }
+}
+
 void draw_page_title(char *str, uint16_t color)
 {
     uint8_t str_len = strlen(str);
@@ -28,7 +125,7 @@ int draw_button(uint16_t x1, uint16_t y1,
 
     lcd_draw_rectangle(x1, y1, x2, y2, width, color);
 
-    lcd_draw_string((x1 + x2) / 2 - 8 * str_len / 2, (y1 + y2) / 2 - 5, str, str_color);
+    lcd_draw_string((x1 + x2) / 2 - 8 * str_len / 2, (y1 + y2) / 2 - 7, str, str_color);
 }
 
 void draw_start_page()
@@ -57,10 +154,11 @@ void draw_connect_server_page(uint8_t *connect_server)
 
         //draw search wifi button
         draw_button(8, 164, 156, 194,
-                    2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "Search", BUTTON_CHAR_COLOR);
+                    2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "Search Wifi", BUTTON_CHAR_COLOR);
 
+        //绘制连接按钮，默认无效
         draw_button(164, 164, 312, 194,
-                    2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "Connect", BUTTON_CHAR_COLOR);
+                    2, LIGHTGREY, DARKGREY, "Connect", BUTTON_CHAR_COLOR);
 
         draw_button(242, 24, 312, 86,
                     2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "up", BUTTON_CHAR_COLOR);

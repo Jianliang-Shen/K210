@@ -58,6 +58,11 @@
         "pin.h": "c",
         "uart.h": "c",
         "fpioa.h": "c",
-        "ft6236u.h": "c"
+        "ft6236u.h": "c",
+        "wifi.h": "c",
+        "sstream": "c",
+        "ui.h": "c",
+        "string_view": "c",
+        "string": "c"
     }
 }

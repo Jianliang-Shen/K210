@@ -1,13 +1,21 @@
 #ifndef _WIFI_H_
 #define _WIFI_H_
 
+#include <stdio.h>
+#include "bsp.h"
+#include "ft6236u.h"
+#include "gpiohs.h"
+#include "lcd.h"
+#include "pin_config.h"
+#include "sleep.h"
+#include "st7789.h"
 #include "string.h"
+#include "sysctl.h"
+#include "ui.h"
 
-// #define WIFI_NAME jianliang
-// #define WIFI_PASSWD 95898063
-// #define WIFI_CONNECT "AT+CWJAP_DEF=\" + WIFI_NAME + \",\" + WIFI_PASSWD + \"\n"
-
+#define MAX_WIFI_LOG_SIZE 500
+#define WIFI_TIME_OUT 1
 
 void wifi_module_init();
-void wifi_send_cmd_and_printf_log(char *cmd);
+void wifi_send_cmd(char *cmd);
 #endif

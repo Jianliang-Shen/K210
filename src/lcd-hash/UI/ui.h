@@ -48,7 +48,11 @@
 #define OPEN_PICTURE_PAGE 3
 
 #define ERROR_PAGE 255
-
+void draw_wifi_list(uint8_t wifi_searched,
+                    uint8_t wifi_updated,
+                    uint8_t *info,
+                    char wifi_numbers,
+                    uint8_t choose_idx);
 int draw_button(uint16_t x1, uint16_t y1,
                 uint16_t x2, uint16_t y2,
                 uint16_t width,

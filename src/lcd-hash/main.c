@@ -82,7 +82,10 @@ uint8_t start_page_operation(uint8_t *connect_server, uint8_t *pic_download)
 
 uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
 {
-    static uint8_t cur_idx = 1;
+    static int8_t cur_idx = 0; //index 从0开始计数，最大值为 MAX_WIFI_NUM - 1
+    static uint8_t cur_wifi_name[16] = {'\0'};
+    static uint8_t wifi_searched = 0;
+    static uint8_t wifi_num = 0;
 
     //如果按下搜寻wifi的按钮
     if(8 < ft6236.touch_x && ft6236.touch_x < 156 &&
@@ -98,16 +101,12 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
 
         //等待处理
         sleep(2);
-        // corelock_lock(&lock);
-        // {
-        //     printf("wifi returns: %s\n", wifi_log);
-        // }
-        // corelock_unlock(&lock);
 
         //打印wifi列表
-        cur_idx = 1;
-        draw_wifi_list(1, 1, wifi_log, 8, cur_idx);
-        wifi_log_clear_flag = 1;
+        draw_wifi_list(&wifi_searched, 1, wifi_log, cur_idx, &wifi_num, cur_wifi_name);
+        printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
+
+        wifi_log_clear_flag = 1; //清楚wifi消息
 
         //搜寻完毕后，按钮变正常
         draw_button(8, 164, 156, 194,
@@ -115,45 +114,57 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
         draw_button(164, 164, 312, 194,
                     2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "Connect", BUTTON_CHAR_COLOR);
     }
-    // if () //如果按下连接按钮
-    // {
-    //     //跳转到连接函数，绘制连接动画
-    //     //如果连接失败
-    //     // draw_error_page("connect failed");
-    //     // return ERROR_PAGE;
-    //     //如果连接成功
-    //     //打印连接成功的logo，在wifi后加上对勾
-    // }
+
+    //如果按下连接按钮
+    if(164 < ft6236.touch_x && ft6236.touch_x < 312 &&
+       164 < ft6236.touch_y && ft6236.touch_y < 194 && wifi_searched)
+    {
+        draw_button(164, 164, 312, 194,
+                    2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
+                    "Connect", BUTTON_CHAR_COLOR);
+        //跳转到连接函数，绘制连接动画
+        //如果连接失败
+        // draw_error_page("connect failed");
+        // return ERROR_PAGE;
+        //如果连接成功
+        //打印连接成功的logo，在wifi后加上对勾
+    }
 
     if(242 < ft6236.touch_x && ft6236.touch_x < 312 &&
-       24 < ft6236.touch_y && ft6236.touch_y < 86)
+       24 < ft6236.touch_y && ft6236.touch_y < 86 && wifi_searched)
     {
         draw_button(242, 24, 312, 86,
                     2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
                     "up", BUTTON_CHAR_COLOR);
         cur_idx--;
-        if(cur_idx < 1)
+        if(cur_idx < 0)
         {
-            cur_idx = 8;
+            cur_idx = wifi_num;
         }
-        draw_wifi_list(1, 0, wifi_log, 8, cur_idx > 1 ? cur_idx : 1);
+
+        draw_wifi_list(&wifi_searched, 0, wifi_log, cur_idx, &wifi_num, cur_wifi_name);
+        printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
+
         draw_button(242, 24, 312, 86,
                     2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR,
                     "up", BUTTON_CHAR_COLOR);
     }
 
     if(242 < ft6236.touch_x && ft6236.touch_x < 312 &&
-       94 < ft6236.touch_y && ft6236.touch_y < 156)
+       94 < ft6236.touch_y && ft6236.touch_y < 156 && wifi_searched)
     {
         draw_button(242, 94, 312, 156,
                     2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
                     "down", BUTTON_CHAR_COLOR);
         cur_idx++;
-        if(cur_idx > 8)
+        if(cur_idx > wifi_num)
         {
-            cur_idx = 1;
+            cur_idx = 0;
         }
-        draw_wifi_list(1, 0, wifi_log, 8, cur_idx > 8 ? 8 : cur_idx);
+
+        draw_wifi_list(&wifi_searched, 0, wifi_log, cur_idx, &wifi_num, cur_wifi_name);
+        printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
+
         draw_button(242, 94, 312, 156,
                     2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR,
                     "down", BUTTON_CHAR_COLOR);
@@ -164,6 +175,8 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
         draw_button(BACK_BUTTON_X1, BACK_BUTTON_Y1, BACK_BUTTON_X2, BACK_BUTTON_Y2,
                     2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR, "BACK", BUTTON_CHAR_COLOR);
         msleep(50);
+        cur_idx = 0;
+        wifi_searched = 0;
 
         draw_start_page();
 
@@ -243,6 +256,7 @@ int core1_main(void *ctx)
         //判断是否清空缓冲区数据
         if(wifi_log_clear_flag == 1)
         {
+            printf("wifi returns: %s\n", wifi_log);
             memset(wifi_log, '\0', 500);
             idx = 0;
             wifi_log_clear_flag = 0;

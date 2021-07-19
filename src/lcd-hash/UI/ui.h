@@ -29,7 +29,6 @@
 #define BACK_BUTTON_X2 312
 #define BACK_BUTTON_Y2 232
 
-
 #define BUTTON_BOUNDARY_COLOR DARKGREY
 #define BUTTON_NORMAL_COLOR LIGHTGREY
 #define BUTTON_TRIGGER_COLOR WHITE
@@ -37,7 +36,6 @@
 #define BUTTON_CHAR_COLOR BLACK
 #define BACKGROUND_COLOR WHITE
 #define TITLE_COLOR BLACK
-
 
 #define CONNECT_SERVER_OK 1
 #define PIC_DONWLOAD_OK 1
@@ -48,11 +46,12 @@
 #define OPEN_PICTURE_PAGE 3
 
 #define ERROR_PAGE 255
-void draw_wifi_list(uint8_t wifi_searched,
+void draw_wifi_list(uint8_t *wifi_searched,
                     uint8_t wifi_updated,
                     uint8_t *info,
-                    char wifi_numbers,
-                    uint8_t choose_idx);
+                    uint8_t choose_idx,
+                    uint8_t *wifi_num,
+                    uint8_t *wifi_name);
 int draw_button(uint16_t x1, uint16_t y1,
                 uint16_t x2, uint16_t y2,
                 uint16_t width,

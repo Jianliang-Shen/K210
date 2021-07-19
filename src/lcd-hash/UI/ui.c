@@ -6,71 +6,75 @@
 #include "st7789.h"
 #include "sysctl.h"
 #include "ui.h"
+#include "wifi.h"
 
-void draw_wifi_list(uint8_t wifi_searched,
+void draw_wifi_list(uint8_t *wifi_searched,
                     uint8_t wifi_updated,
                     uint8_t *info,
-                    char wifi_numbers,
-                    uint8_t choose_idx)
+                    uint8_t choose_idx,
+                    uint8_t *wifi_num,
+                    uint8_t *wifi_name)
 {
     static uint8_t str[8][20];
 
     uint16_t y = 28, x = 14;
-    uint16_t column = -1, idx = 0, base = 0, base_updated = 0;
+
+    //column 从0开始计算
+    uint16_t column = -1, idx = 0;
     uint16_t length = strlen(info);
 
     static uint8_t now_grey_idx;
     static uint8_t drawed_flag = 0;
+    
+    if(wifi_updated)
+    {
+        //清空区域
+        draw_button(8, 24, 234, 156,
+                    2, BLACK, WHITE, "", BUTTON_CHAR_COLOR);
+        memset(str, '\0', sizeof(str));
+        drawed_flag = 0;
 
-    if(!wifi_searched)
-    {
-        return;
-    } else
-    {
-        if(wifi_updated)
+        for(uint16_t i = 0; i < length; i++)
         {
-            //清空区域
-            draw_button(8, 24, 234, 156,
-                        2, BLACK, WHITE, "", BUTTON_CHAR_COLOR);
-            memset(str, '\0', sizeof(str));
-            drawed_flag = 0;
-
-            for(uint16_t i = 0; i < length; i++)
+            if(info[i] == '(')
             {
-                if(info[i] == '(')
+                column++;
+                if(column > MAX_WIFI_NUM - 1)
                 {
-                    column++;
-                    if(column > 7)
+                    column = MAX_WIFI_NUM - 1;
+                    break;
+                }
+                for(uint16_t j = i + 4; j < length; j++)
+                {
+                    if(info[j] == '"')
                     {
                         break;
-                    }
-                    base = i;
-                    base_updated = 1;
-                }
-
-                if(base_updated)
-                {
-                    for(uint16_t j = base + 4; j < length; j++)
+                    } else
                     {
-                        if(info[j] == '"')
-                        {
-                            break;
-                        } else
-                        {
-                            str[column][j - base - 4] = info[j];
-                        }
+                        str[column][j - i - 4] = info[j];
                     }
-                    base_updated = 0;
                 }
             }
         }
-        uint8_t tmp_idx = now_grey_idx;
-        for(uint8_t i = 0; i < wifi_numbers; i++)
+        if(column >= 0)
         {
+            *wifi_num = column;
+            *wifi_searched = 1;
+        } else
+        {
+            printf("No wifi searched!\n");
+        }
+    }
 
+    // 如果搜索到wifi
+    if(*wifi_searched == 1)
+    {
+        uint8_t tmp_idx = now_grey_idx;
+        for(uint8_t i = 0; i <= *wifi_num; i++)
+        {
             if(drawed_flag)
             {
-                if(i == choose_idx - 1)
+                if(i == choose_idx)
                 {
                     uint32_t data = ((uint32_t)LIGHTGREY << 16) | (uint32_t)GREEN;
                     lcd_set_area(10, y, 232, y + 14);
@@ -87,7 +91,7 @@ void draw_wifi_list(uint8_t wifi_searched,
                 }
             } else
             {
-                if(i == choose_idx - 1)
+                if(i == choose_idx)
                 {
                     uint32_t data = ((uint32_t)LIGHTGREY << 16) | (uint32_t)GREEN;
                     lcd_set_area(10, y, 232, y + 14);
@@ -102,6 +106,7 @@ void draw_wifi_list(uint8_t wifi_searched,
         }
         drawed_flag = 1;
     }
+    memcpy(wifi_name, str[choose_idx], 16); //获取wifi name
 }
 
 void draw_page_title(char *str, uint16_t color)

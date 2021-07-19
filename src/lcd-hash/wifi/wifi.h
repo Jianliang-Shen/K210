@@ -15,6 +15,7 @@
 
 #define MAX_WIFI_LOG_SIZE 500
 #define WIFI_TIME_OUT 1
+#define MAX_WIFI_NUM 8
 
 void wifi_module_init();
 void wifi_send_cmd(char *cmd);

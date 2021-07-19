@@ -21,8 +21,8 @@
 #ifndef PSA_CRYPTO_ECP_H
 #define PSA_CRYPTO_ECP_H
 
-#include <psa/crypto.h>
-#include <mbedtls/ecp.h>
+#include <crypto.h>
+#include <ecp.h>
 
 /** Load the contents of a key buffer into an internal ECP representation
  *

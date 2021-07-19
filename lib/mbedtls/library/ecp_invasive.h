@@ -27,8 +27,8 @@
 #define MBEDTLS_ECP_INVASIVE_H
 
 #include "common.h"
-#include "mbedtls/bignum.h"
-#include "mbedtls/ecp.h"
+#include "bignum.h"
+#include "ecp.h"
 
 #if defined(MBEDTLS_TEST_HOOKS) && defined(MBEDTLS_ECP_C)
 

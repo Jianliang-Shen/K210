@@ -46,15 +46,15 @@
 
 #ifndef MBEDTLS_CCM_H
 #define MBEDTLS_CCM_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif
 
-#include "mbedtls/cipher.h"
+#include "cipher.h"
 
 #define MBEDTLS_CCM_DECRYPT       0
 #define MBEDTLS_CCM_ENCRYPT       1

@@ -492,7 +492,7 @@
  * This option is independent of \c MBEDTLS_AES_FEWER_TABLES.
  *
  */
-//#define MBEDTLS_AES_ROM_TABLES
+#define MBEDTLS_AES_ROM_TABLES
 
 /**
  * \def MBEDTLS_AES_FEWER_TABLES
@@ -1009,7 +1009,7 @@
  *
  * Uncomment this macro to disable the built-in platform entropy functions.
  */
-//#define MBEDTLS_NO_PLATFORM_ENTROPY
+#define MBEDTLS_NO_PLATFORM_ENTROPY
 
 /**
  * \def MBEDTLS_ENTROPY_FORCE_SHA256
@@ -2490,7 +2490,7 @@
  *
  * This module provides networking routines.
  */
-#define MBEDTLS_NET_C
+// #define MBEDTLS_NET_C
 
 /**
  * \def MBEDTLS_OID_C
@@ -2963,7 +2963,7 @@
  *
  * Module:  library/timing.c
  */
-#define MBEDTLS_TIMING_C
+// #define MBEDTLS_TIMING_C
 
 /**
  * \def MBEDTLS_VERSION_C
@@ -3379,9 +3379,9 @@
 #endif
 
 #if defined(MBEDTLS_PSA_CRYPTO_CONFIG)
-#include "mbedtls/config_psa.h"
+#include "config_psa.h"
 #endif
 
-#include "mbedtls/check_config.h"
+#include "check_config.h"
 
 #endif /* MBEDTLS_CONFIG_H */

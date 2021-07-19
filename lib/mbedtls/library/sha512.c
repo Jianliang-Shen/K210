@@ -26,9 +26,9 @@
 
 #if defined(MBEDTLS_SHA512_C)
 
-#include "mbedtls/sha512.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "sha512.h"
+#include "platform_util.h"
+#include "error.h"
 
 #if defined(_MSC_VER) || defined(__WATCOMC__)
   #define UL64(x) x##ui64
@@ -40,7 +40,7 @@
 
 #if defined(MBEDTLS_SELF_TEST)
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdio.h>
 #include <stdlib.h>

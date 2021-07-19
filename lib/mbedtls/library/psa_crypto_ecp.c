@@ -22,7 +22,7 @@
 
 #if defined(MBEDTLS_PSA_CRYPTO_C)
 
-#include <psa/crypto.h>
+#include <crypto.h>
 #include "psa_crypto_core.h"
 #include "psa_crypto_ecp.h"
 #include "psa_crypto_random_impl.h"
@@ -30,15 +30,15 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #if !defined(MBEDTLS_PLATFORM_C)
 #define mbedtls_calloc calloc
 #define mbedtls_free   free
 #endif
 
-#include <mbedtls/ecdsa.h>
-#include <mbedtls/ecp.h>
-#include <mbedtls/error.h>
+#include <ecdsa.h>
+#include <ecp.h>
+#include <error.h>
 
 #if ( defined(MBEDTLS_PSA_BUILTIN_KEY_TYPE_ECC_KEY_PAIR) ||  \
       ( defined(PSA_CRYPTO_DRIVER_TEST) &&                   \

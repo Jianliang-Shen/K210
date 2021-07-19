@@ -21,7 +21,7 @@
 
 #if defined(MBEDTLS_TIMING_C)
 
-#include "mbedtls/timing.h"
+#include "timing.h"
 
 #if !defined(MBEDTLS_TIMING_ALT)
 

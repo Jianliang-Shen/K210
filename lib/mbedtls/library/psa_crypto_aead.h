@@ -21,7 +21,7 @@
 #ifndef PSA_CRYPTO_AEAD_H
 #define PSA_CRYPTO_AEAD_H
 
-#include <psa/crypto.h>
+#include <crypto.h>
 
 /**
  * \brief Process an authenticated encryption operation.

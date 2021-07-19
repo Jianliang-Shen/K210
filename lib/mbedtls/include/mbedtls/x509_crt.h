@@ -21,17 +21,17 @@
  */
 #ifndef MBEDTLS_X509_CRT_H
 #define MBEDTLS_X509_CRT_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif
 
-#include "mbedtls/x509.h"
-#include "mbedtls/x509_crl.h"
-#include "mbedtls/bignum.h"
+#include "x509.h"
+#include "x509_crl.h"
+#include "bignum.h"
 
 /**
  * \addtogroup x509_module

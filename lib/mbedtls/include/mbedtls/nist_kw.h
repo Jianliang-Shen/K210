@@ -34,15 +34,15 @@
 
 #ifndef MBEDTLS_NIST_KW_H
 #define MBEDTLS_NIST_KW_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif
 
-#include "mbedtls/cipher.h"
+#include "cipher.h"
 
 #ifdef __cplusplus
 extern "C" {

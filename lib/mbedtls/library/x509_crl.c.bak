@@ -31,19 +31,19 @@
 
 #if defined(MBEDTLS_X509_CRL_PARSE_C)
 
-#include "mbedtls/x509_crl.h"
-#include "mbedtls/error.h"
-#include "mbedtls/oid.h"
-#include "mbedtls/platform_util.h"
+#include "x509_crl.h"
+#include "error.h"
+#include "oid.h"
+#include "platform_util.h"
 
 #include <string.h>
 
 #if defined(MBEDTLS_PEM_PARSE_C)
-#include "mbedtls/pem.h"
+#include "pem.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #include <stdio.h>

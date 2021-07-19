@@ -29,22 +29,22 @@
 
 #if defined(MBEDTLS_DHM_C)
 
-#include "mbedtls/dhm.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "dhm.h"
+#include "platform_util.h"
+#include "error.h"
 
 #include <string.h>
 
 #if defined(MBEDTLS_PEM_PARSE_C)
-#include "mbedtls/pem.h"
+#include "pem.h"
 #endif
 
 #if defined(MBEDTLS_ASN1_PARSE_C)
-#include "mbedtls/asn1.h"
+#include "asn1.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #include <stdio.h>

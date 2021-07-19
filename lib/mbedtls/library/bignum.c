@@ -37,15 +37,15 @@
 
 #if defined(MBEDTLS_BIGNUM_C)
 
-#include "mbedtls/bignum.h"
+#include "bignum.h"
 #include "bn_mul.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "platform_util.h"
+#include "error.h"
 
 #include <string.h>
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdio.h>
 #include <stdlib.h>

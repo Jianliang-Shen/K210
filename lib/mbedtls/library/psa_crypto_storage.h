@@ -27,8 +27,8 @@
 extern "C" {
 #endif
 
-#include "psa/crypto.h"
-#include "psa/crypto_se_driver.h"
+#include "crypto.h"
+#include "crypto_se_driver.h"
 
 #include <stdint.h>
 #include <string.h>

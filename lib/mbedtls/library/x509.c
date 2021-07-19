@@ -31,20 +31,20 @@
 
 #if defined(MBEDTLS_X509_USE_C)
 
-#include "mbedtls/x509.h"
-#include "mbedtls/asn1.h"
-#include "mbedtls/error.h"
-#include "mbedtls/oid.h"
+#include "x509.h"
+#include "asn1.h"
+#include "error.h"
+#include "oid.h"
 
 #include <stdio.h>
 #include <string.h>
 
 #if defined(MBEDTLS_PEM_PARSE_C)
-#include "mbedtls/pem.h"
+#include "pem.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,10 +55,10 @@
 #endif
 
 #if defined(MBEDTLS_HAVE_TIME)
-#include "mbedtls/platform_time.h"
+#include "platform_time.h"
 #endif
 #if defined(MBEDTLS_HAVE_TIME_DATE)
-#include "mbedtls/platform_util.h"
+#include "platform_util.h"
 #include <time.h>
 #endif
 

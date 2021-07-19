@@ -21,25 +21,25 @@
  */
 #ifndef MBEDTLS_OID_H
 #define MBEDTLS_OID_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif
 
-#include "mbedtls/asn1.h"
-#include "mbedtls/pk.h"
+#include "asn1.h"
+#include "pk.h"
 
 #include <stddef.h>
 
 #if defined(MBEDTLS_CIPHER_C)
-#include "mbedtls/cipher.h"
+#include "cipher.h"
 #endif
 
 #if defined(MBEDTLS_MD_C)
-#include "mbedtls/md.h"
+#include "md.h"
 #endif
 
 #define MBEDTLS_ERR_OID_NOT_FOUND                         -0x002E  /**< OID is not found. */

@@ -21,7 +21,7 @@
 #ifndef PSA_CRYPTO_HASH_H
 #define PSA_CRYPTO_HASH_H
 
-#include <psa/crypto.h>
+#include <crypto.h>
 
 #include "md_wrap.h"
 

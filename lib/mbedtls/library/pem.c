@@ -21,19 +21,19 @@
 
 #if defined(MBEDTLS_PEM_PARSE_C) || defined(MBEDTLS_PEM_WRITE_C)
 
-#include "mbedtls/pem.h"
-#include "mbedtls/base64.h"
-#include "mbedtls/des.h"
-#include "mbedtls/aes.h"
-#include "mbedtls/md5.h"
-#include "mbedtls/cipher.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "pem.h"
+#include "base64.h"
+#include "des.h"
+#include "mbed_aes.h"
+#include "md5.h"
+#include "cipher.h"
+#include "platform_util.h"
+#include "error.h"
 
 #include <string.h>
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc    calloc

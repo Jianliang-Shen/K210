@@ -21,10 +21,10 @@
  */
 #ifndef MBEDTLS_ASN1_H
 #define MBEDTLS_ASN1_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif
@@ -32,7 +32,7 @@
 #include <stddef.h>
 
 #if defined(MBEDTLS_BIGNUM_C)
-#include "mbedtls/bignum.h"
+#include "bignum.h"
 #endif
 
 /**

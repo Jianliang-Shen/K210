@@ -26,50 +26,50 @@
 #if defined(MBEDTLS_CIPHER_C)
 
 #include "cipher_wrap.h"
-#include "mbedtls/error.h"
+#include "error.h"
 
 #if defined(MBEDTLS_CHACHAPOLY_C)
-#include "mbedtls/chachapoly.h"
+#include "chachapoly.h"
 #endif
 
 #if defined(MBEDTLS_AES_C)
-#include "mbedtls/aes.h"
+#include "mbed_aes.h"
 #endif
 
 #if defined(MBEDTLS_ARC4_C)
-#include "mbedtls/arc4.h"
+#include "arc4.h"
 #endif
 
 #if defined(MBEDTLS_CAMELLIA_C)
-#include "mbedtls/camellia.h"
+#include "camellia.h"
 #endif
 
 #if defined(MBEDTLS_ARIA_C)
-#include "mbedtls/aria.h"
+#include "aria.h"
 #endif
 
 #if defined(MBEDTLS_DES_C)
-#include "mbedtls/des.h"
+#include "des.h"
 #endif
 
 #if defined(MBEDTLS_BLOWFISH_C)
-#include "mbedtls/blowfish.h"
+#include "blowfish.h"
 #endif
 
 #if defined(MBEDTLS_CHACHA20_C)
-#include "mbedtls/chacha20.h"
+#include "chacha20.h"
 #endif
 
 #if defined(MBEDTLS_GCM_C)
-#include "mbedtls/gcm.h"
+#include "gcm.h"
 #endif
 
 #if defined(MBEDTLS_CCM_C)
-#include "mbedtls/ccm.h"
+#include "ccm.h"
 #endif
 
 #if defined(MBEDTLS_NIST_KW_C)
-#include "mbedtls/nist_kw.h"
+#include "nist_kw.h"
 #endif
 
 #if defined(MBEDTLS_CIPHER_NULL_CIPHER)
@@ -77,7 +77,7 @@
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc    calloc

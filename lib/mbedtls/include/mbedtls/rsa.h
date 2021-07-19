@@ -27,19 +27,19 @@
  */
 #ifndef MBEDTLS_RSA_H
 #define MBEDTLS_RSA_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif
 
-#include "mbedtls/bignum.h"
-#include "mbedtls/md.h"
+#include "bignum.h"
+#include "md.h"
 
 #if defined(MBEDTLS_THREADING_C)
-#include "mbedtls/threading.h"
+#include "threading.h"
 #endif
 
 /*

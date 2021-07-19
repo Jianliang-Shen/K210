@@ -23,7 +23,7 @@
 #if defined(MBEDTLS_PSA_CRYPTO_C)
 
 #include "psa_crypto_service_integration.h"
-#include "psa/crypto.h"
+#include "crypto.h"
 
 #include "psa_crypto_core.h"
 #include "psa_crypto_driver_wrappers.h"
@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include <string.h>
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #define mbedtls_calloc calloc
 #define mbedtls_free   free

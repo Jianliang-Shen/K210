@@ -31,15 +31,15 @@
 
 #ifndef MBEDTLS_ECDH_H
 #define MBEDTLS_ECDH_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif
 
-#include "mbedtls/ecp.h"
+#include "ecp.h"
 
 /*
  * Mbed TLS supports two formats for ECDH contexts (#mbedtls_ecdh_context

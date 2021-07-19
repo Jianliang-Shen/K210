@@ -25,10 +25,10 @@
 #include "psa_crypto_aead.h"
 #include "psa_crypto_core.h"
 
-#include "mbedtls/ccm.h"
-#include "mbedtls/chachapoly.h"
-#include "mbedtls/cipher.h"
-#include "mbedtls/gcm.h"
+#include "ccm.h"
+#include "chachapoly.h"
+#include "cipher.h"
+#include "gcm.h"
 
 typedef struct
 {

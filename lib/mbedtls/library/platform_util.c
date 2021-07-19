@@ -28,9 +28,9 @@
 
 #include "common.h"
 
-#include "mbedtls/platform_util.h"
-#include "mbedtls/platform.h"
-#include "mbedtls/threading.h"
+#include "platform_util.h"
+#include "mbed_platform.h"
+#include "threading.h"
 
 #include <stddef.h>
 #include <string.h>

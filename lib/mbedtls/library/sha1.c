@@ -26,15 +26,15 @@
 
 #if defined(MBEDTLS_SHA1_C)
 
-#include "mbedtls/sha1.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "sha1.h"
+#include "platform_util.h"
+#include "error.h"
 
 #include <string.h>
 
 #if defined(MBEDTLS_SELF_TEST)
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdio.h>
 #define mbedtls_printf printf

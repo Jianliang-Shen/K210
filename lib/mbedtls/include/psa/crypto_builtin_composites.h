@@ -32,9 +32,9 @@
 
 #ifndef PSA_CRYPTO_BUILTIN_COMPOSITES_H
 #define PSA_CRYPTO_BUILTIN_COMPOSITES_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
-#include <psa/crypto_driver_common.h>
+#include <crypto_driver_common.h>
 
 /*
  * MAC multi-part operation definitions.
@@ -58,7 +58,7 @@ typedef struct
 #define MBEDTLS_PSA_HMAC_OPERATION_INIT {0, PSA_HASH_OPERATION_INIT, {0}}
 #endif /* MBEDTLS_PSA_BUILTIN_ALG_HMAC */
 
-#include "mbedtls/cmac.h"
+#include "cmac.h"
 
 typedef struct
 {

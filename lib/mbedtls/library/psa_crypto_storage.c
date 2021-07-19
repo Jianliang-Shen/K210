@@ -26,19 +26,19 @@
 #include <string.h>
 
 #include "psa_crypto_service_integration.h"
-#include "psa/crypto.h"
+#include "crypto.h"
 #include "psa_crypto_storage.h"
-#include "mbedtls/platform_util.h"
+#include "platform_util.h"
 
 #if defined(MBEDTLS_PSA_ITS_FILE_C)
 #include "psa_crypto_its.h"
 #else /* Native ITS implementation */
-#include "psa/error.h"
-#include "psa/internal_trusted_storage.h"
+#include "error.h"
+#include "internal_trusted_storage.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc   calloc

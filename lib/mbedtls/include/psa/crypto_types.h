@@ -32,7 +32,7 @@
 
 #ifndef PSA_CRYPTO_TYPES_H
 #define PSA_CRYPTO_TYPES_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 #include "crypto_platform.h"
 

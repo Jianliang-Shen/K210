@@ -27,31 +27,31 @@
 #if defined(MBEDTLS_SSL_TLS_C)
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc    calloc
 #define mbedtls_free      free
 #endif
 
-#include "mbedtls/ssl.h"
+#include "ssl.h"
 #include "ssl_misc.h"
-#include "mbedtls/debug.h"
-#include "mbedtls/error.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/version.h"
+#include "debug.h"
+#include "error.h"
+#include "platform_util.h"
+#include "version.h"
 
 #include "ssl_invasive.h"
 
 #include <string.h>
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
-#include "mbedtls/psa_util.h"
-#include "psa/crypto.h"
+#include "psa_util.h"
+#include "crypto.h"
 #endif
 
 #if defined(MBEDTLS_X509_CRT_PARSE_C)
-#include "mbedtls/oid.h"
+#include "oid.h"
 #endif
 
 static uint32_t ssl_get_hs_total_len( mbedtls_ssl_context const *ssl );

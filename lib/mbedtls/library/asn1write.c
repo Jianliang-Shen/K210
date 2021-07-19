@@ -21,13 +21,13 @@
 
 #if defined(MBEDTLS_ASN1_WRITE_C)
 
-#include "mbedtls/asn1write.h"
-#include "mbedtls/error.h"
+#include "asn1write.h"
+#include "error.h"
 
 #include <string.h>
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc    calloc

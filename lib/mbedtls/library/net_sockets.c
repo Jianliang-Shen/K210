@@ -38,13 +38,13 @@
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #endif
 
-#include "mbedtls/net_sockets.h"
-#include "mbedtls/error.h"
+#include "net_sockets.h"
+#include "error.h"
 
 #include <string.h>
 

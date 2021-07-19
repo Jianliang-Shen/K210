@@ -21,10 +21,10 @@
 
 #if defined(MBEDTLS_ENTROPY_C)
 
-#include "mbedtls/entropy.h"
+#include "entropy.h"
 #include "entropy_poll.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "platform_util.h"
+#include "error.h"
 
 #include <string.h>
 
@@ -33,12 +33,12 @@
 #endif
 
 #if defined(MBEDTLS_ENTROPY_NV_SEED)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #endif
 
 #if defined(MBEDTLS_SELF_TEST)
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdio.h>
 #define mbedtls_printf     printf

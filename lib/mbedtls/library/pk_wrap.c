@@ -21,37 +21,37 @@
 
 #if defined(MBEDTLS_PK_C)
 #include "pk_wrap.h"
-#include "mbedtls/error.h"
+#include "error.h"
 
 /* Even if RSA not activated, for the sake of RSA-alt */
-#include "mbedtls/rsa.h"
+#include "rsa.h"
 
 #include <string.h>
 
 #if defined(MBEDTLS_ECP_C)
-#include "mbedtls/ecp.h"
+#include "ecp.h"
 #endif
 
 #if defined(MBEDTLS_ECDSA_C)
-#include "mbedtls/ecdsa.h"
+#include "ecdsa.h"
 #endif
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
-#include "mbedtls/asn1write.h"
+#include "asn1write.h"
 #endif
 
 #if defined(MBEDTLS_PK_RSA_ALT_SUPPORT)
-#include "mbedtls/platform_util.h"
+#include "platform_util.h"
 #endif
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
-#include "psa/crypto.h"
-#include "mbedtls/psa_util.h"
-#include "mbedtls/asn1.h"
+#include "crypto.h"
+#include "psa_util.h"
+#include "asn1.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc    calloc

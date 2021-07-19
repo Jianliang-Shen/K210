@@ -26,26 +26,26 @@
 
 #if defined(MBEDTLS_X509_CSR_WRITE_C)
 
-#include "mbedtls/x509_csr.h"
-#include "mbedtls/asn1write.h"
-#include "mbedtls/error.h"
-#include "mbedtls/oid.h"
-#include "mbedtls/platform_util.h"
+#include "x509_csr.h"
+#include "asn1write.h"
+#include "error.h"
+#include "oid.h"
+#include "platform_util.h"
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
-#include "psa/crypto.h"
-#include "mbedtls/psa_util.h"
+#include "crypto.h"
+#include "psa_util.h"
 #endif
 
 #include <string.h>
 #include <stdlib.h>
 
 #if defined(MBEDTLS_PEM_WRITE_C)
-#include "mbedtls/pem.h"
+#include "pem.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc    calloc

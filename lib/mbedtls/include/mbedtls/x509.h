@@ -21,19 +21,19 @@
  */
 #ifndef MBEDTLS_X509_H
 #define MBEDTLS_X509_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif
 
-#include "mbedtls/asn1.h"
-#include "mbedtls/pk.h"
+#include "asn1.h"
+#include "pk.h"
 
 #if defined(MBEDTLS_RSA_C)
-#include "mbedtls/rsa.h"
+#include "rsa.h"
 #endif
 
 /**

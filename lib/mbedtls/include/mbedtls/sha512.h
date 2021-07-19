@@ -23,10 +23,10 @@
  */
 #ifndef MBEDTLS_SHA512_H
 #define MBEDTLS_SHA512_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif

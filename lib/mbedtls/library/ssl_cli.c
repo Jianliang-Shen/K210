@@ -22,20 +22,20 @@
 #if defined(MBEDTLS_SSL_CLI_C)
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc    calloc
 #define mbedtls_free      free
 #endif
 
-#include "mbedtls/ssl.h"
+#include "ssl.h"
 #include "ssl_misc.h"
-#include "mbedtls/debug.h"
-#include "mbedtls/error.h"
+#include "debug.h"
+#include "error.h"
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
-#include "mbedtls/psa_util.h"
+#include "psa_util.h"
 #endif /* MBEDTLS_USE_PSA_CRYPTO */
 
 #include <string.h>
@@ -43,11 +43,11 @@
 #include <stdint.h>
 
 #if defined(MBEDTLS_HAVE_TIME)
-#include "mbedtls/platform_time.h"
+#include "platform_time.h"
 #endif
 
 #if defined(MBEDTLS_SSL_SESSION_TICKETS)
-#include "mbedtls/platform_util.h"
+#include "platform_util.h"
 #endif
 
 #if defined(MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED)

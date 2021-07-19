@@ -21,35 +21,35 @@
 
 #if defined(MBEDTLS_PK_WRITE_C)
 
-#include "mbedtls/pk.h"
-#include "mbedtls/asn1write.h"
-#include "mbedtls/oid.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "pk.h"
+#include "asn1write.h"
+#include "oid.h"
+#include "platform_util.h"
+#include "error.h"
 
 #include <string.h>
 
 #if defined(MBEDTLS_RSA_C)
-#include "mbedtls/rsa.h"
+#include "rsa.h"
 #endif
 #if defined(MBEDTLS_ECP_C)
-#include "mbedtls/bignum.h"
-#include "mbedtls/ecp.h"
-#include "mbedtls/platform_util.h"
+#include "bignum.h"
+#include "ecp.h"
+#include "platform_util.h"
 #endif
 #if defined(MBEDTLS_ECDSA_C)
-#include "mbedtls/ecdsa.h"
+#include "ecdsa.h"
 #endif
 #if defined(MBEDTLS_PEM_WRITE_C)
-#include "mbedtls/pem.h"
+#include "pem.h"
 #endif
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
-#include "psa/crypto.h"
-#include "mbedtls/psa_util.h"
+#include "crypto.h"
+#include "psa_util.h"
 #endif
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc    calloc

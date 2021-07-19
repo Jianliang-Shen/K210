@@ -31,7 +31,7 @@
 #include "mps_trace.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdio.h>
 #define mbedtls_printf    printf

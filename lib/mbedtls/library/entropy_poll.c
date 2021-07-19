@@ -28,15 +28,15 @@
 
 #if defined(MBEDTLS_ENTROPY_C)
 
-#include "mbedtls/entropy.h"
+#include "entropy.h"
 #include "entropy_poll.h"
-#include "mbedtls/error.h"
+#include "error.h"
 
 #if defined(MBEDTLS_TIMING_C)
-#include "mbedtls/timing.h"
+#include "timing.h"
 #endif
 #if defined(MBEDTLS_ENTROPY_NV_SEED)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #endif
 
 #if !defined(MBEDTLS_NO_PLATFORM_ENTROPY)

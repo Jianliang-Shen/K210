@@ -27,9 +27,9 @@
 
 #ifndef PSA_CRYPTO_EXTRA_H
 #define PSA_CRYPTO_EXTRA_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
-#include "mbedtls/platform_util.h"
+#include "platform_util.h"
 
 #include "crypto_compat.h"
 
@@ -574,7 +574,7 @@ psa_status_t psa_get_key_domain_parameters(
  */
 
 #if defined(MBEDTLS_ECP_C)
-#include <mbedtls/ecp.h>
+#include <ecp.h>
 
 /** Convert an ECC curve identifier from the Mbed TLS encoding to PSA.
  *

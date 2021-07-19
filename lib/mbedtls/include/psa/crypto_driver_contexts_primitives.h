@@ -33,13 +33,13 @@
 #ifndef PSA_CRYPTO_DRIVER_CONTEXTS_PRIMITIVES_H
 #define PSA_CRYPTO_DRIVER_CONTEXTS_PRIMITIVES_H
 
-#include "psa/crypto_driver_common.h"
+#include "crypto_driver_common.h"
 
 /* Include the context structure definitions for those drivers that were
  * declared during the autogeneration process. */
 
 /* Include the context structure definitions for the Mbed TLS software drivers */
-#include "psa/crypto_builtin_primitives.h"
+#include "crypto_builtin_primitives.h"
 
 /* Define the context to be used for an operation that is executed through the
  * PSA Driver wrapper layer as the union of all possible driver's contexts.

@@ -27,7 +27,7 @@
 #include "psa_crypto_hash.h"
 #include "psa_crypto_mac.h"
 
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 
 #if defined(MBEDTLS_PSA_CRYPTO_C)
 

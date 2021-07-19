@@ -27,7 +27,7 @@
 #define MBEDTLS_SSL_INVASIVE_H
 
 #include "common.h"
-#include "mbedtls/md.h"
+#include "md.h"
 
 #if defined(MBEDTLS_TEST_HOOKS) &&              \
     defined(MBEDTLS_SSL_SOME_SUITES_USE_TLS_CBC)

@@ -27,9 +27,9 @@
 
 #if defined(MBEDTLS_HMAC_DRBG_C)
 
-#include "mbedtls/hmac_drbg.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "hmac_drbg.h"
+#include "platform_util.h"
+#include "error.h"
 
 #include <string.h>
 
@@ -39,7 +39,7 @@
 
 #if defined(MBEDTLS_SELF_TEST)
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdio.h>
 #define mbedtls_printf printf

@@ -22,12 +22,12 @@
 
 #if defined(MBEDTLS_PSA_CRYPTO_C)
 
-#include <psa/crypto.h>
+#include <crypto.h>
 #include "psa_crypto_core.h"
 #include "psa_crypto_mac.h"
-#include <mbedtls/md.h>
+#include <md.h>
 
-#include <mbedtls/error.h>
+#include <error.h>
 #include <string.h>
 
 /* Use builtin defines specific to this compilation unit, since the test driver

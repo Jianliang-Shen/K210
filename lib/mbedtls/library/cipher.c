@@ -25,45 +25,45 @@
 
 #if defined(MBEDTLS_CIPHER_C)
 
-#include "mbedtls/cipher.h"
+#include "cipher.h"
 #include "cipher_wrap.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "platform_util.h"
+#include "error.h"
 
 #include <stdlib.h>
 #include <string.h>
 
 #if defined(MBEDTLS_CHACHAPOLY_C)
-#include "mbedtls/chachapoly.h"
+#include "chachapoly.h"
 #endif
 
 #if defined(MBEDTLS_GCM_C)
-#include "mbedtls/gcm.h"
+#include "gcm.h"
 #endif
 
 #if defined(MBEDTLS_CCM_C)
-#include "mbedtls/ccm.h"
+#include "ccm.h"
 #endif
 
 #if defined(MBEDTLS_CHACHA20_C)
-#include "mbedtls/chacha20.h"
+#include "chacha20.h"
 #endif
 
 #if defined(MBEDTLS_CMAC_C)
-#include "mbedtls/cmac.h"
+#include "cmac.h"
 #endif
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
-#include "psa/crypto.h"
-#include "mbedtls/psa_util.h"
+#include "crypto.h"
+#include "psa_util.h"
 #endif /* MBEDTLS_USE_PSA_CRYPTO */
 
 #if defined(MBEDTLS_NIST_KW_C)
-#include "mbedtls/nist_kw.h"
+#include "nist_kw.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #define mbedtls_calloc calloc
 #define mbedtls_free   free

@@ -21,10 +21,10 @@
  */
 #ifndef MBEDTLS_SSL_TICKET_H
 #define MBEDTLS_SSL_TICKET_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif
@@ -35,11 +35,11 @@
  * secrecy, when MBEDTLS_HAVE_TIME is defined.
  */
 
-#include "mbedtls/ssl.h"
-#include "mbedtls/cipher.h"
+#include "ssl.h"
+#include "cipher.h"
 
 #if defined(MBEDTLS_THREADING_C)
-#include "mbedtls/threading.h"
+#include "threading.h"
 #endif
 
 #ifdef __cplusplus

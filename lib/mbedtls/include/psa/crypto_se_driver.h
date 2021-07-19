@@ -33,7 +33,7 @@
  */
 #ifndef PSA_CRYPTO_SE_DRIVER_H
 #define PSA_CRYPTO_SE_DRIVER_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 #include "crypto_driver_common.h"
 

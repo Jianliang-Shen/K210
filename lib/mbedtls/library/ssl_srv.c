@@ -22,27 +22,27 @@
 #if defined(MBEDTLS_SSL_SRV_C)
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc    calloc
 #define mbedtls_free      free
 #endif
 
-#include "mbedtls/ssl.h"
+#include "ssl.h"
 #include "ssl_misc.h"
-#include "mbedtls/debug.h"
-#include "mbedtls/error.h"
-#include "mbedtls/platform_util.h"
+#include "debug.h"
+#include "error.h"
+#include "platform_util.h"
 
 #include <string.h>
 
 #if defined(MBEDTLS_ECP_C)
-#include "mbedtls/ecp.h"
+#include "ecp.h"
 #endif
 
 #if defined(MBEDTLS_HAVE_TIME)
-#include "mbedtls/platform_time.h"
+#include "platform_time.h"
 #endif
 
 #if defined(MBEDTLS_SSL_DTLS_HELLO_VERIFY)

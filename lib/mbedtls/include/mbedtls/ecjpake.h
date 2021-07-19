@@ -21,7 +21,7 @@
  */
 #ifndef MBEDTLS_ECJPAKE_H
 #define MBEDTLS_ECJPAKE_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 /*
  * J-PAKE is a password-authenticated key exchange that allows deriving a
@@ -40,13 +40,13 @@
  * also be use outside TLS.
  */
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif
 
-#include "mbedtls/ecp.h"
-#include "mbedtls/md.h"
+#include "ecp.h"
+#include "md.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -29,10 +29,10 @@
 
 #include <string.h>
 
-#include "mbedtls/aes.h"
-#include "mbedtls/platform.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "mbed_aes.h"
+#include "mbed_platform.h"
+#include "platform_util.h"
+#include "error.h"
 #if defined(MBEDTLS_PADLOCK_C)
 #include "padlock.h"
 #endif
@@ -42,7 +42,7 @@
 
 #if defined(MBEDTLS_SELF_TEST)
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdio.h>
 #define mbedtls_printf printf

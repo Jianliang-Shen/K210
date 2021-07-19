@@ -72,10 +72,10 @@
 
 #if defined(MBEDTLS_ECP_C)
 
-#include "mbedtls/ecp.h"
-#include "mbedtls/threading.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "ecp.h"
+#include "threading.h"
+#include "platform_util.h"
+#include "error.h"
 
 #include "ecp_invasive.h"
 
@@ -90,7 +90,7 @@
     MBEDTLS_INTERNAL_VALIDATE( cond )
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #include <stdio.h>

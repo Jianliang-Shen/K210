@@ -28,9 +28,9 @@
 
 #if defined(MBEDTLS_ECDH_C)
 
-#include "mbedtls/ecdh.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "ecdh.h"
+#include "platform_util.h"
+#include "error.h"
 
 #include <string.h>
 

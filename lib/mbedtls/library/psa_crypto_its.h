@@ -24,8 +24,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <psa/crypto_types.h>
-#include <psa/crypto_values.h>
+#include <crypto_types.h>
+#include <crypto_values.h>
 
 #ifdef __cplusplus
 extern "C" {

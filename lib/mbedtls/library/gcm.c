@@ -31,9 +31,9 @@
 
 #if defined(MBEDTLS_GCM_C)
 
-#include "mbedtls/gcm.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "gcm.h"
+#include "platform_util.h"
+#include "error.h"
 
 #include <string.h>
 
@@ -42,8 +42,8 @@
 #endif
 
 #if defined(MBEDTLS_SELF_TEST) && defined(MBEDTLS_AES_C)
-#include "mbedtls/aes.h"
-#include "mbedtls/platform.h"
+#include "mbed_aes.h"
+#include "mbed_platform.h"
 #if !defined(MBEDTLS_PLATFORM_C)
 #include <stdio.h>
 #define mbedtls_printf printf

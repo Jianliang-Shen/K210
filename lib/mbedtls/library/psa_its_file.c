@@ -23,7 +23,7 @@
 #if defined(MBEDTLS_PSA_ITS_FILE_C)
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #define mbedtls_snprintf   snprintf
 #endif

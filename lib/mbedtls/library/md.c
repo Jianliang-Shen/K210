@@ -25,21 +25,21 @@
 
 #if defined(MBEDTLS_MD_C)
 
-#include "mbedtls/md.h"
+#include "md.h"
 #include "md_wrap.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "platform_util.h"
+#include "error.h"
 
-#include "mbedtls/md2.h"
-#include "mbedtls/md4.h"
-#include "mbedtls/md5.h"
-#include "mbedtls/ripemd160.h"
-#include "mbedtls/sha1.h"
-#include "mbedtls/sha256.h"
-#include "mbedtls/sha512.h"
+#include "md2.h"
+#include "md4.h"
+#include "md5.h"
+#include "ripemd160.h"
+#include "sha1.h"
+#include "mbed_sha256.h"
+#include "sha512.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc    calloc

@@ -22,8 +22,8 @@
 #ifndef PSA_CRYPTO_DRIVER_WRAPPERS_H
 #define PSA_CRYPTO_DRIVER_WRAPPERS_H
 
-#include "psa/crypto.h"
-#include "psa/crypto_driver_common.h"
+#include "crypto.h"
+#include "crypto_driver_common.h"
 
 /*
  * Signature functions

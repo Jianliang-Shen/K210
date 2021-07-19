@@ -22,7 +22,7 @@
 #if defined(MBEDTLS_SSL_TICKET_C)
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc    calloc
@@ -30,9 +30,9 @@
 #endif
 
 #include "ssl_misc.h"
-#include "mbedtls/ssl_ticket.h"
-#include "mbedtls/error.h"
-#include "mbedtls/platform_util.h"
+#include "ssl_ticket.h"
+#include "error.h"
+#include "platform_util.h"
 
 #include <string.h>
 

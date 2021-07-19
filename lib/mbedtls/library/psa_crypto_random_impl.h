@@ -30,13 +30,13 @@
 #ifndef PSA_CRYPTO_RANDOM_IMPL_H
 #define PSA_CRYPTO_RANDOM_IMPL_H
 
-#include <mbedtls/psa_util.h>
+#include <psa_util.h>
 
 #if defined(MBEDTLS_PSA_CRYPTO_EXTERNAL_RNG)
 
 #include <string.h>
-#include <mbedtls/entropy.h> // only for error codes
-#include <psa/crypto.h>
+#include <entropy.h> // only for error codes
+#include <crypto.h>
 
 typedef mbedtls_psa_external_random_context_t mbedtls_psa_random_context_t;
 
@@ -53,15 +53,15 @@ int mbedtls_psa_get_random( void *p_rng,
 /* Choose a DRBG based on configuration and availability */
 #if defined(MBEDTLS_PSA_HMAC_DRBG_MD_TYPE)
 
-#include "mbedtls/hmac_drbg.h"
+#include "hmac_drbg.h"
 
 #elif defined(MBEDTLS_CTR_DRBG_C)
 
-#include "mbedtls/ctr_drbg.h"
+#include "ctr_drbg.h"
 
 #elif defined(MBEDTLS_HMAC_DRBG_C)
 
-#include "mbedtls/hmac_drbg.h"
+#include "hmac_drbg.h"
 #if defined(MBEDTLS_SHA512_C) && defined(MBEDTLS_SHA256_C)
 #include <limits.h>
 #if SIZE_MAX > 0xffffffff
@@ -83,7 +83,7 @@ int mbedtls_psa_get_random( void *p_rng,
 #error "No DRBG module available for the psa_crypto module."
 #endif
 
-#include "mbedtls/entropy.h"
+#include "entropy.h"
 
 /** Initialize the PSA DRBG.
  *

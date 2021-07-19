@@ -24,13 +24,13 @@
 #if defined(MBEDTLS_SSL_TLS_C)
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #endif
 
-#include "mbedtls/ssl_ciphersuites.h"
-#include "mbedtls/ssl.h"
+#include "ssl_ciphersuites.h"
+#include "ssl.h"
 #include "ssl_misc.h"
 
 #include <string.h>

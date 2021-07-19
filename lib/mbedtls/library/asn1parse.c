@@ -21,18 +21,18 @@
 
 #if defined(MBEDTLS_ASN1_PARSE_C)
 
-#include "mbedtls/asn1.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
+#include "asn1.h"
+#include "platform_util.h"
+#include "error.h"
 
 #include <string.h>
 
 #if defined(MBEDTLS_BIGNUM_C)
-#include "mbedtls/bignum.h"
+#include "bignum.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc    calloc

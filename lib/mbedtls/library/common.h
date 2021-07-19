@@ -26,7 +26,7 @@
 #if defined(MBEDTLS_CONFIG_FILE)
 #include MBEDTLS_CONFIG_FILE
 #else
-#include "mbedtls/config.h"
+#include "config.h"
 #endif
 
 /** Helper to define a function as static except when building invasive tests.

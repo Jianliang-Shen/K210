@@ -21,10 +21,10 @@
 
 #if defined(MBEDTLS_SSL_PROTO_TLS1_3_EXPERIMENTAL)
 
-#include "mbedtls/hkdf.h"
+#include "hkdf.h"
 #include "ssl_misc.h"
 #include "ssl_tls13_keys.h"
-#include "mbedtls/debug.h"
+#include "debug.h"
 
 #include <stdint.h>
 #include <string.h>

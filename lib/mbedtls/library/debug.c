@@ -22,7 +22,7 @@
 #if defined(MBEDTLS_DEBUG_C)
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #else
 #include <stdlib.h>
 #define mbedtls_calloc      calloc
@@ -32,8 +32,8 @@
 #define mbedtls_vsnprintf   vsnprintf
 #endif
 
-#include "mbedtls/debug.h"
-#include "mbedtls/error.h"
+#include "debug.h"
+#include "error.h"
 
 #include <stdarg.h>
 #include <stdio.h>

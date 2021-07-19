@@ -22,8 +22,8 @@
 
 #if defined(MBEDTLS_RSA_C)
 
-#include "mbedtls/rsa.h"
-#include "mbedtls/bignum.h"
+#include "rsa.h"
+#include "bignum.h"
 #include "rsa_alt_helpers.h"
 
 /*

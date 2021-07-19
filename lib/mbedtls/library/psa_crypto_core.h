@@ -22,13 +22,13 @@
 #define PSA_CRYPTO_CORE_H
 
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif
 
-#include "psa/crypto.h"
-#include "psa/crypto_se_driver.h"
+#include "crypto.h"
+#include "crypto_se_driver.h"
 
 /** Constant-time buffer comparison
  *

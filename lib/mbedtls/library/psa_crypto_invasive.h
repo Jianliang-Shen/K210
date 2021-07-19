@@ -31,13 +31,13 @@
 #if defined(MBEDTLS_CONFIG_FILE)
 #include MBEDTLS_CONFIG_FILE
 #else
-#include "mbedtls/config.h"
+#include "config.h"
 #endif
 
-#include "psa/crypto.h"
+#include "crypto.h"
 #include "common.h"
 
-#include "mbedtls/entropy.h"
+#include "entropy.h"
 
 #if !defined(MBEDTLS_PSA_CRYPTO_EXTERNAL_RNG)
 /** \brief Configure entropy sources.

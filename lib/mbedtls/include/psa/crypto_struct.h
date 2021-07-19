@@ -60,7 +60,7 @@
 
 #ifndef PSA_CRYPTO_STRUCT_H
 #define PSA_CRYPTO_STRUCT_H
-#include "mbedtls/private_access.h"
+#include "private_access.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,17 +69,17 @@ extern "C" {
 /* Include the Mbed TLS configuration file, the way Mbed TLS does it
  * in each of its header files. */
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
+#include "config.h"
 #else
 #include MBEDTLS_CONFIG_FILE
 #endif
 
-#include "mbedtls/cmac.h"
-#include "mbedtls/gcm.h"
+#include "cmac.h"
+#include "gcm.h"
 
 /* Include the context definition for the compiled-in drivers for the primitive
  * algorithms. */
-#include "psa/crypto_driver_contexts_primitives.h"
+#include "crypto_driver_contexts_primitives.h"
 
 struct psa_hash_operation_s
 {
@@ -127,7 +127,7 @@ static inline struct psa_cipher_operation_s psa_cipher_operation_init( void )
 
 /* Include the context definition for the compiled-in drivers for the composite
  * algorithms. */
-#include "psa/crypto_driver_contexts_composites.h"
+#include "crypto_driver_contexts_composites.h"
 
 struct psa_mac_operation_s
 {

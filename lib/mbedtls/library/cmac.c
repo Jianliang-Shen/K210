@@ -42,10 +42,10 @@
 
 #if defined(MBEDTLS_CMAC_C)
 
-#include "mbedtls/cmac.h"
-#include "mbedtls/platform_util.h"
-#include "mbedtls/error.h"
-#include "mbedtls/platform.h"
+#include "cmac.h"
+#include "platform_util.h"
+#include "error.h"
+#include "mbed_platform.h"
 
 #include <string.h>
 

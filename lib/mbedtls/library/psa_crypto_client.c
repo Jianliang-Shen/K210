@@ -20,12 +20,12 @@
 
 #include "common.h"
 #include "psa_crypto_service_integration.h"
-#include "psa/crypto.h"
+#include "crypto.h"
 
 #if defined(MBEDTLS_PSA_CRYPTO_CLIENT)
 
 #include <string.h>
-#include "mbedtls/platform.h"
+#include "mbed_platform.h"
 #if !defined(MBEDTLS_PLATFORM_C)
 #define mbedtls_calloc calloc
 #define mbedtls_free   free

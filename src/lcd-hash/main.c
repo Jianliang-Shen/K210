@@ -2,6 +2,7 @@
 #include "bsp.h"
 #include "ft6236u.h"
 #include "gpiohs.h"
+#include "keypad.h"
 #include "lcd.h"
 #include "pin_config.h"
 #include "sleep.h"
@@ -14,6 +15,11 @@
 corelock_t lock;
 uint8_t wifi_log[MAX_WIFI_LOG_SIZE];
 uint8_t wifi_log_clear_flag = 0;
+
+uint8_t keypad_flag = 0;
+int8_t curr_row = 0, curr_column = 0;
+
+uint32_t g_count = 0;
 
 void hardware_init(void)
 {
@@ -31,6 +37,30 @@ void hardware_init(void)
     fpioa_set_function(PIN_FT_INT, FUNC_FT_INT);
     fpioa_set_function(PIN_FT_SCL, FUNC_FT_SCL);
     fpioa_set_function(PIN_FT_SDA, FUNC_FT_SDA);
+
+    fpioa_set_function(PIN_KEYPAD_LEFT, FUNC_KEYPAD_LEFT);
+    fpioa_set_function(PIN_KEYPAD_MIDDLE, FUNC_KEYPAD_MIDDLE);
+    fpioa_set_function(PIN_KEYPAD_RIGHT, FUNC_KEYPAD_RIGHT);
+
+    fpioa_set_function(PIN_KEY, FUNC_KEY);
+}
+
+int key_irq_cb(void *ctx)
+{
+    uint32_t *tmp = (uint32_t *)(ctx);
+    *tmp = 1;
+
+    return 0;
+}
+
+void init_key(void)
+{
+    /* 设置按键的GPIO模式为上拉输入 */
+    gpiohs_set_drive_mode(KEY_GPIONUM, GPIO_DM_INPUT_PULL_UP);
+    /* 设置按键的GPIO电平触发模式为上升沿和下降沿 */
+    gpiohs_set_pin_edge(KEY_GPIONUM, GPIO_PE_FALLING);
+    /* 设置按键GPIO口的中断回调 */
+    gpiohs_irq_register(KEY_GPIONUM, 1, key_irq_cb, &g_count);
 }
 
 uint8_t start_page_operation(uint8_t *connect_server, uint8_t *pic_download)
@@ -122,6 +152,11 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
         draw_button(164, 164, 312, 194,
                     2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
                     "Connect", BUTTON_CHAR_COLOR);
+        msleep(50);
+        draw_wifi_login_page(NULL, cur_wifi_name, 0);
+
+        return WIFI_LOGIN_PAGE;
+
         //跳转到连接函数，绘制连接动画
         //如果连接失败
         // draw_error_page("connect failed");
@@ -175,6 +210,8 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
         draw_button(BACK_BUTTON_X1, BACK_BUTTON_Y1, BACK_BUTTON_X2, BACK_BUTTON_Y2,
                     2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR, "BACK", BUTTON_CHAR_COLOR);
         msleep(50);
+
+        //重置静态变量现场
         cur_idx = 0;
         wifi_searched = 0;
 
@@ -183,6 +220,107 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
         return START_PAGE;
     }
     return CONNECT_SERVER_PAGE;
+}
+
+void key_left(void *arg)
+{
+    keypad_flag = 1;
+    uint8_t row_nums[] = {12, 12, 11, 10, 1};
+    curr_column--;
+    for(int j = 0; j < 5; j++)
+    {
+        if(curr_row == j)
+        {
+            if(curr_column < 0)
+            {
+                curr_column = row_nums[j > 0 ? j - 1 : 4];
+                curr_row--;
+            }
+        }
+    }
+    if(curr_row < 0)
+    {
+        curr_row = 4;
+    }
+}
+
+void key_right(void *arg)
+{
+    keypad_flag = 1;
+    uint8_t row_nums[] = {12, 12, 11, 10, 1};
+    curr_column++;
+    for(int j = 0; j < 5; j++)
+    {
+        if(curr_row == j)
+        {
+            if(curr_column > row_nums[j])
+            {
+                curr_column = 0;
+                curr_row++;
+            }
+        }
+    }
+    if(curr_row > 4)
+    {
+        curr_row = 0;
+    }
+}
+
+void key_middle(void *arg)
+{
+    keypad_flag = 1;
+    uint8_t row_nums[] = {12, 12, 11, 10, 1};
+
+    curr_row++;
+    if(curr_row > 4)
+    {
+        curr_row = 0;
+    }
+    curr_column = curr_column > row_nums[curr_row] ? row_nums[curr_row] : curr_column;
+}
+
+uint8_t wifi_login_operation(uint8_t *connect_server, uint8_t *pic_download)
+{
+    static int8_t key_value = 0;
+    static uint8_t shift_on = 0;
+
+    if(shift_on == 0)
+    {
+        draw_wifi_login_key_page1(curr_row, curr_column, &key_value, 1);
+    } else
+    {
+        draw_wifi_login_key_page2(curr_row, curr_column, &key_value, 1);
+    }
+    if(g_count == 1)
+    {
+        printf("curr_column = %d, curr_row = %d, key_value = %d\n", curr_column, curr_row, key_value);
+        switch(key_value)
+        {
+            case -3:
+                if(shift_on == 0)
+                {
+                    draw_wifi_login_key_page2(curr_row, curr_column, &key_value, 0);
+                    shift_on = 1;
+                } else
+                {
+                    draw_wifi_login_key_page1(curr_row, curr_column, &key_value, 0);
+                    shift_on = 0;
+                }
+                break;
+            case -4:
+                draw_connect_server_page();
+                shift_on = 0;
+                key_value = 0;
+                curr_row = 0;
+                curr_column = 0;
+                return CONNECT_SERVER_PAGE;
+                break;
+            default:
+                break;
+        }
+    }
+
+    return WIFI_LOGIN_PAGE;
 }
 
 uint8_t pic_download_operation(uint8_t *connect_server, uint8_t *pic_download)
@@ -279,8 +417,25 @@ int main(void)
     io_set_power();
     plic_init();
     sysctl_enable_irq();
+    keypad_init();
+    init_key();
+
     lcd_init();
     ft6236_init();
+
+    /* 设置keypad回调 */
+    keypad[EN_KEY_ID_LEFT].short_key_down = key_left;
+    keypad[EN_KEY_ID_LEFT].long_key_down = key_left;
+    keypad[EN_KEY_ID_LEFT].repeat_key_down = key_left;
+
+    keypad[EN_KEY_ID_MIDDLE].short_key_down = key_middle;
+    keypad[EN_KEY_ID_MIDDLE].long_key_down = key_middle;
+    keypad[EN_KEY_ID_MIDDLE].repeat_key_down = key_middle;
+
+    keypad[EN_KEY_ID_RIGHT].short_key_down = key_right;
+    keypad[EN_KEY_ID_RIGHT].long_key_down = key_right;
+    keypad[EN_KEY_ID_RIGHT].repeat_key_down = key_right;
+
     draw_start_page();
 
     wifi_module_init();
@@ -295,7 +450,7 @@ int main(void)
 
     while(1)
     {
-        if(ft6236.touch_state & TP_COORD_UD)
+        if(ft6236.touch_state & TP_COORD_UD || keypad_flag == 1 || g_count == 1)
         {
             ft6236.touch_state &= ~TP_COORD_UD;
             ft6236_scan();
@@ -304,20 +459,19 @@ int main(void)
             switch(page_state)
             {
                 case START_PAGE:
-
                     page_state = start_page_operation(&connect_server, &pic_download);
                     break;
-
                 case CONNECT_SERVER_PAGE:
                     page_state = connect_server_operation(&connect_server, &pic_download);
                     break;
                 case PIC_DOWNLOAD_PAGE:
                     page_state = pic_download_operation(&connect_server, &pic_download);
-
                     break;
                 case OPEN_PICTURE_PAGE:
                     page_state = open_picture_operation(&connect_server, &pic_download);
-
+                    break;
+                case WIFI_LOGIN_PAGE:
+                    page_state = wifi_login_operation(&connect_server, &pic_download);
                     break;
                 case ERROR_PAGE:
                     page_state = error_operation();
@@ -328,6 +482,8 @@ int main(void)
             }
         }
         ft6236.touch_state &= ~TP_COORD_UD;
+        keypad_flag = 0;
+        g_count = 0;
 
         msleep(50);
     }

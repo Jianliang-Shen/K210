@@ -13,7 +13,7 @@
 #include "sysctl.h"
 #include "ui.h"
 
-#define MAX_WIFI_LOG_SIZE 500
+#define MAX_WIFI_LOG_SIZE 1000
 #define WIFI_TIME_OUT 1
 #define MAX_WIFI_NUM 8
 

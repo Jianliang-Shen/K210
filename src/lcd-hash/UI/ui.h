@@ -44,6 +44,7 @@
 #define CONNECT_SERVER_PAGE 1
 #define PIC_DOWNLOAD_PAGE 2
 #define OPEN_PICTURE_PAGE 3
+#define WIFI_LOGIN_PAGE 4
 
 #define ERROR_PAGE 255
 void draw_wifi_list(uint8_t *wifi_searched,
@@ -60,6 +61,17 @@ int draw_button(uint16_t x1, uint16_t y1,
                 char *str, uint16_t str_color);
 void draw_start_page();
 void draw_connect_server_page();
+void draw_wifi_login_key_page1(uint8_t curr_row,
+                               uint8_t curr_column,
+                               int8_t *value,
+                               uint8_t page_status);
+void draw_wifi_login_key_page2(uint8_t curr_row,
+                               uint8_t curr_column,
+                               int8_t *value,
+                               uint8_t page_status);
+void draw_wifi_login_page(uint8_t *wifi_connected,
+                          uint8_t *wifi_name,
+                          uint8_t page_num);
 void draw_pic_download_page();
 void draw_open_pic_page();
 void draw_error_page(char *error_info);

@@ -25,7 +25,7 @@ void draw_wifi_list(uint8_t *wifi_searched,
 
     static uint8_t now_grey_idx;
     static uint8_t drawed_flag = 0;
-    
+
     if(wifi_updated)
     {
         //清空区域
@@ -183,6 +183,458 @@ void draw_connect_server_page(uint8_t *connect_server)
         draw_button(BACK_BUTTON_X1, BACK_BUTTON_Y1, BACK_BUTTON_X2, BACK_BUTTON_Y2,
                     2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "BACK", BUTTON_CHAR_COLOR);
     }
+}
+
+void draw_wifi_login_key_page1(uint8_t curr_row, uint8_t curr_column, int8_t *value, uint8_t page_status)
+{
+    /*
+        =========================
+              Enter passwd
+                 xxxx
+        =========================
+        1 2 3 4 5 6 7 8 9 0 - = <==
+        q w e r t y u i o p [ ] \
+          a s d f g h j k l ; ' Enter
+           z x c v b n m , . / Shift
+                blank    back
+        =========================
+    */
+    static uint8_t old_row = 0;
+    static uint8_t old_column = 0;
+    uint8_t line[5][15][5] = {{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "<=="},
+                              {"q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"},
+                              {"a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "\'", "Enter"},
+                              {"z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "Shift"},
+                              {" ", "<<"}};
+    int8_t value_array[5][15] = {{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', -1},
+                                 {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'},
+                                 {'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', -2},
+                                 {'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', -3},
+                                 {' ', -4}};
+    *value = value_array[curr_row][curr_column];
+
+    if(page_status == 0)
+    {
+        for(int j = 0; j < 5; j++)
+        {
+            if(j == 0)
+            {
+                for(int i = 0; i < 12; i++)
+                {
+                    draw_button(5 + i * 20, 102, 5 + i * 20 + 18, 127, 1,
+                                BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (i == curr_column)) ? GREEN : WHITE,
+                                line[j][i], BUTTON_CHAR_COLOR);
+                }
+                draw_button(245, 102, 315, 127, 1,
+                            BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (12 == curr_column)) ? GREEN : WHITE,
+                            line[j][12], BUTTON_CHAR_COLOR);
+            }
+            if(j == 1)
+            {
+                for(int i = 0; i < 12; i++)
+                {
+                    draw_button(15 + i * 20, 129, 15 + i * 20 + 18, 154, 1,
+                                BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (i == curr_column)) ? GREEN : WHITE,
+                                line[j][i], BUTTON_CHAR_COLOR);
+                }
+                draw_button(255, 129, 305, 154, 1,
+                            BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (12 == curr_column)) ? GREEN : WHITE,
+                            line[j][12], BUTTON_CHAR_COLOR);
+            }
+            if(j == 2)
+            {
+                for(int i = 0; i < 11; i++)
+                {
+                    draw_button(25 + i * 20, 156, 25 + i * 20 + 18, 181, 1,
+                                BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (i == curr_column)) ? GREEN : WHITE,
+                                line[j][i], BUTTON_CHAR_COLOR);
+                }
+                draw_button(245, 156, 295, 181, 1,
+                            BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (11 == curr_column)) ? GREEN : WHITE,
+                            line[j][11], BUTTON_CHAR_COLOR);
+            }
+            if(j == 3)
+            {
+                for(int i = 0; i < 10; i++)
+                {
+                    draw_button(35 + i * 20, 183, 35 + i * 20 + 18, 208, 1,
+                                BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (i == curr_column)) ? GREEN : WHITE,
+                                line[j][i], BUTTON_CHAR_COLOR);
+                }
+                draw_button(235, 183, 285, 208, 1,
+                            BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (10 == curr_column)) ? GREEN : WHITE,
+                            line[j][10], BUTTON_CHAR_COLOR);
+            }
+            if(j == 4)
+            {
+                draw_button(45, 210, 213, 235, 1,
+                            BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (0 == curr_column)) ? GREEN : WHITE,
+                            line[j][0], BUTTON_CHAR_COLOR);
+
+                draw_button(215, 210, 275, 235, 1,
+                            BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (1 == curr_column)) ? GREEN : WHITE,
+                            line[j][1], BUTTON_CHAR_COLOR);
+            }
+        }
+    }
+
+    if(page_status == 1)
+    {
+        for(int j = 0; j < 5; j++)
+        {
+            if(j == 0)
+            {
+                for(int i = 0; i < 12; i++)
+                {
+                    if(j == old_row && i == old_column)
+                    {
+                        draw_button(5 + i * 20, 102, 5 + i * 20 + 18, 127, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                    if(j == curr_row && i == curr_column)
+                    {
+                        draw_button(5 + i * 20, 102, 5 + i * 20 + 18, 127, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                }
+                if(j == old_row && 12 == old_column)
+                {
+                    draw_button(245, 102, 315, 127, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][12], BUTTON_CHAR_COLOR);
+                }
+                if(j == curr_row && 12 == curr_column)
+                {
+                    draw_button(245, 102, 315, 127, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][12], BUTTON_CHAR_COLOR);
+                }
+            }
+            if(j == 1)
+            {
+                for(int i = 0; i < 12; i++)
+                {
+
+                    if(j == old_row && i == old_column)
+                    {
+                        draw_button(15 + i * 20, 129, 15 + i * 20 + 18, 154, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                    if(j == curr_row && i == curr_column)
+                    {
+                        draw_button(15 + i * 20, 129, 15 + i * 20 + 18, 154, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                }
+
+                if(j == old_row && 12 == old_column)
+                {
+                    draw_button(255, 129, 305, 154, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][12], BUTTON_CHAR_COLOR);
+                }
+                if(j == curr_row && 12 == curr_column)
+                {
+                    draw_button(255, 129, 305, 154, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][12], BUTTON_CHAR_COLOR);
+                }
+            }
+
+            if(j == 2)
+            {
+                for(int i = 0; i < 11; i++)
+                {
+
+                    if(j == old_row && i == old_column)
+                    {
+                        draw_button(25 + i * 20, 156, 25 + i * 20 + 18, 181, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                    if(j == curr_row && i == curr_column)
+                    {
+                        draw_button(25 + i * 20, 156, 25 + i * 20 + 18, 181, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                }
+
+                if(j == old_row && 11 == old_column)
+                {
+                    draw_button(245, 156, 295, 181, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][11], BUTTON_CHAR_COLOR);
+                }
+                if(j == curr_row && 11 == curr_column)
+                {
+                    draw_button(245, 156, 295, 181, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][11], BUTTON_CHAR_COLOR);
+                }
+            }
+            if(j == 3)
+            {
+                for(int i = 0; i < 10; i++)
+                {
+
+                    if(j == old_row && i == old_column)
+                    {
+                        draw_button(35 + i * 20, 183, 35 + i * 20 + 18, 208, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                    if(j == curr_row && i == curr_column)
+                    {
+                        draw_button(35 + i * 20, 183, 35 + i * 20 + 18, 208, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                }
+
+                if(j == old_row && 10 == old_column)
+                {
+                    draw_button(235, 183, 285, 208, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][10], BUTTON_CHAR_COLOR);
+                }
+                if(j == curr_row && 10 == curr_column)
+                {
+                    draw_button(235, 183, 285, 208, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][10], BUTTON_CHAR_COLOR);
+                }
+            }
+            if(j == 4)
+            {
+
+                if(j == old_row && 0 == old_column)
+                {
+                    draw_button(45, 210, 213, 235, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][0], BUTTON_CHAR_COLOR);
+                }
+                if(j == curr_row && 0 == curr_column)
+                {
+                    draw_button(45, 210, 213, 235, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][0], BUTTON_CHAR_COLOR);
+                }
+                if(j == old_row && 1 == old_column)
+                {
+                    draw_button(215, 210, 275, 235, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][1], BUTTON_CHAR_COLOR);
+                }
+                if(j == curr_row && 1 == curr_column)
+                {
+                    draw_button(215, 210, 275, 235, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][1], BUTTON_CHAR_COLOR);
+                }
+            }
+        }
+
+        old_row = curr_row;
+        old_column = curr_column;
+    }
+}
+
+void draw_wifi_login_key_page2(uint8_t curr_row, uint8_t curr_column, int8_t *value, uint8_t page_status)
+{
+    /*
+        =========================
+              Enter passwd
+                 xxxx
+        =========================
+        ! @ # 4 5 ^ & * ( ) _ + <==
+        Q W E R T Y U I O P { } |
+          A S D F G H J K L ： “ Enter
+           Z X C V B N M < > ？ Shift
+                blank    back
+        =========================
+    */
+    static uint8_t old_row = 0;
+    static uint8_t old_column = 0;
+    uint8_t line[5][15][5] = {{"!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "<=="},
+                              {"Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "{", "}", "\\"},
+                              {"A", "S", "D", "F", "G", "H", "J", "K", "L", ":", "\"", "Enter"},
+                              {"Z", "X", "C", "V", "B", "N", "M", "<", ">", "?", "Shift"},
+                              {" ", "<<"}};
+    int8_t value_array[5][15] = {{'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', -1},
+                                 {'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\\'},
+                                 {'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '\"', -2},
+                                 {'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', -3},
+                                 {' ', -4}};
+    *value = value_array[curr_row][curr_column];
+
+
+    if(page_status == 0)
+    {
+        for(int j = 0; j < 5; j++)
+        {
+            if(j == 0)
+            {
+                for(int i = 0; i < 12; i++)
+                {
+                    draw_button(5 + i * 20, 102, 5 + i * 20 + 18, 127, 1,
+                                BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (i == curr_column)) ? GREEN : WHITE,
+                                line[j][i], BUTTON_CHAR_COLOR);
+                }
+                draw_button(245, 102, 315, 127, 1,
+                            BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (12 == curr_column)) ? GREEN : WHITE,
+                            line[j][12], BUTTON_CHAR_COLOR);
+            }
+            if(j == 1)
+            {
+                for(int i = 0; i < 12; i++)
+                {
+                    draw_button(15 + i * 20, 129, 15 + i * 20 + 18, 154, 1,
+                                BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (i == curr_column)) ? GREEN : WHITE,
+                                line[j][i], BUTTON_CHAR_COLOR);
+                }
+                draw_button(255, 129, 305, 154, 1,
+                            BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (12 == curr_column)) ? GREEN : WHITE,
+                            line[j][12], BUTTON_CHAR_COLOR);
+            }
+            if(j == 2)
+            {
+                for(int i = 0; i < 11; i++)
+                {
+                    draw_button(25 + i * 20, 156, 25 + i * 20 + 18, 181, 1,
+                                BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (i == curr_column)) ? GREEN : WHITE,
+                                line[j][i], BUTTON_CHAR_COLOR);
+                }
+                draw_button(245, 156, 295, 181, 1,
+                            BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (11 == curr_column)) ? GREEN : WHITE,
+                            line[j][11], BUTTON_CHAR_COLOR);
+            }
+            if(j == 3)
+            {
+                for(int i = 0; i < 10; i++)
+                {
+                    draw_button(35 + i * 20, 183, 35 + i * 20 + 18, 208, 1,
+                                BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (i == curr_column)) ? GREEN : WHITE,
+                                line[j][i], BUTTON_CHAR_COLOR);
+                }
+                draw_button(235, 183, 285, 208, 1,
+                            BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (10 == curr_column)) ? GREEN : WHITE,
+                            line[j][10], BUTTON_CHAR_COLOR);
+            }
+            if(j == 4)
+            {
+                draw_button(45, 210, 213, 235, 1,
+                            BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (0 == curr_column)) ? GREEN : WHITE,
+                            line[j][0], BUTTON_CHAR_COLOR);
+
+                draw_button(215, 210, 275, 235, 1,
+                            BUTTON_BOUNDARY_COLOR, ((j == curr_row) && (1 == curr_column)) ? GREEN : WHITE,
+                            line[j][1], BUTTON_CHAR_COLOR);
+            }
+        }
+    }
+
+    if(page_status == 1)
+    {
+        for(int j = 0; j < 5; j++)
+        {
+            if(j == 0)
+            {
+                for(int i = 0; i < 12; i++)
+                {
+                    if(j == old_row && i == old_column)
+                    {
+                        draw_button(5 + i * 20, 102, 5 + i * 20 + 18, 127, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                    if(j == curr_row && i == curr_column)
+                    {
+                        draw_button(5 + i * 20, 102, 5 + i * 20 + 18, 127, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                }
+                if(j == old_row && 12 == old_column)
+                {
+                    draw_button(245, 102, 315, 127, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][12], BUTTON_CHAR_COLOR);
+                }
+                if(j == curr_row && 12 == curr_column)
+                {
+                    draw_button(245, 102, 315, 127, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][12], BUTTON_CHAR_COLOR);
+                }
+            }
+            if(j == 1)
+            {
+                for(int i = 0; i < 12; i++)
+                {
+
+                    if(j == old_row && i == old_column)
+                    {
+                        draw_button(15 + i * 20, 129, 15 + i * 20 + 18, 154, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                    if(j == curr_row && i == curr_column)
+                    {
+                        draw_button(15 + i * 20, 129, 15 + i * 20 + 18, 154, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                }
+
+                if(j == old_row && 12 == old_column)
+                {
+                    draw_button(255, 129, 305, 154, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][12], BUTTON_CHAR_COLOR);
+                }
+                if(j == curr_row && 12 == curr_column)
+                {
+                    draw_button(255, 129, 305, 154, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][12], BUTTON_CHAR_COLOR);
+                }
+            }
+
+            if(j == 2)
+            {
+                for(int i = 0; i < 11; i++)
+                {
+
+                    if(j == old_row && i == old_column)
+                    {
+                        draw_button(25 + i * 20, 156, 25 + i * 20 + 18, 181, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                    if(j == curr_row && i == curr_column)
+                    {
+                        draw_button(25 + i * 20, 156, 25 + i * 20 + 18, 181, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                }
+
+                if(j == old_row && 11 == old_column)
+                {
+                    draw_button(245, 156, 295, 181, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][11], BUTTON_CHAR_COLOR);
+                }
+                if(j == curr_row && 11 == curr_column)
+                {
+                    draw_button(245, 156, 295, 181, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][11], BUTTON_CHAR_COLOR);
+                }
+            }
+            if(j == 3)
+            {
+                for(int i = 0; i < 10; i++)
+                {
+
+                    if(j == old_row && i == old_column)
+                    {
+                        draw_button(35 + i * 20, 183, 35 + i * 20 + 18, 208, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                    if(j == curr_row && i == curr_column)
+                    {
+                        draw_button(35 + i * 20, 183, 35 + i * 20 + 18, 208, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][i], BUTTON_CHAR_COLOR);
+                    }
+                }
+
+                if(j == old_row && 10 == old_column)
+                {
+                    draw_button(235, 183, 285, 208, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][10], BUTTON_CHAR_COLOR);
+                }
+                if(j == curr_row && 10 == curr_column)
+                {
+                    draw_button(235, 183, 285, 208, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][10], BUTTON_CHAR_COLOR);
+                }
+            }
+            if(j == 4)
+            {
+
+                if(j == old_row && 0 == old_column)
+                {
+                    draw_button(45, 210, 213, 235, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][0], BUTTON_CHAR_COLOR);
+                }
+                if(j == curr_row && 0 == curr_column)
+                {
+                    draw_button(45, 210, 213, 235, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][0], BUTTON_CHAR_COLOR);
+                }
+                if(j == old_row && 1 == old_column)
+                {
+                    draw_button(215, 210, 275, 235, 1, BUTTON_BOUNDARY_COLOR, WHITE, line[j][1], BUTTON_CHAR_COLOR);
+                }
+                if(j == curr_row && 1 == curr_column)
+                {
+                    draw_button(215, 210, 275, 235, 1, BUTTON_BOUNDARY_COLOR, GREEN, line[j][1], BUTTON_CHAR_COLOR);
+                }
+            }
+        }
+
+        old_row = curr_row;
+        old_column = curr_column;
+    }
+}
+
+void draw_wifi_login_page(uint8_t *wifi_connected, uint8_t *wifi_name, uint8_t page_num)
+{
+
+    uint8_t title[35] = {'\0'};
+    tfp_sprintf(title, "Enter %s\'s passwd", wifi_name);
+    uint8_t passwd[15] = {'\0'};
+
+    lcd_clear(BACKGROUND_COLOR);
+    draw_page_title(title, TITLE_COLOR);
+    draw_button(60, 45, 260, 75, 2, BUTTON_BOUNDARY_COLOR, WHITE, passwd, BUTTON_CHAR_COLOR);
+    draw_wifi_login_key_page1(0, 0, NULL, 0);
 }
 
 void draw_pic_download_page()

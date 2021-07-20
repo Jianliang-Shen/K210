@@ -63,6 +63,7 @@
         "sstream": "c",
         "ui.h": "c",
         "string_view": "c",
-        "string": "c"
+        "string": "c",
+        "pin_config.h": "c"
     }
 }

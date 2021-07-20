@@ -20,6 +20,9 @@ uint8_t keypad_flag = 0;
 int8_t curr_row = 0, curr_column = 0;
 
 uint32_t g_count = 0;
+uint8_t wifi_searched = 0;
+uint8_t wifi_num = 0;
+uint8_t cur_wifi_name[16] = {'\0'};
 
 void hardware_init(void)
 {
@@ -73,7 +76,7 @@ uint8_t start_page_operation(uint8_t *connect_server, uint8_t *pic_download)
                     "1.Connect Server", BUTTON_CHAR_COLOR);
         msleep(50);
 
-        draw_connect_server_page(connect_server);
+        draw_connect_server_page(connect_server, &wifi_searched, &wifi_num);
         return CONNECT_SERVER_PAGE;
     } else if(BUTTON_2_X1 < ft6236.touch_x && ft6236.touch_x < BUTTON_2_X2 &&
               BUTTON_2_Y1 < ft6236.touch_y && ft6236.touch_y < BUTTON_2_Y2)
@@ -113,9 +116,6 @@ uint8_t start_page_operation(uint8_t *connect_server, uint8_t *pic_download)
 uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
 {
     static int8_t cur_idx = 0; //index 从0开始计数，最大值为 MAX_WIFI_NUM - 1
-    static uint8_t cur_wifi_name[16] = {'\0'};
-    static uint8_t wifi_searched = 0;
-    static uint8_t wifi_num = 0;
 
     //如果按下搜寻wifi的按钮
     if(8 < ft6236.touch_x && ft6236.touch_x < 156 &&
@@ -132,8 +132,11 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
         //等待处理
         sleep(2);
 
+        //重置静态变量现场
+        cur_idx = 0;
+
         //打印wifi列表
-        draw_wifi_list(&wifi_searched, 1, wifi_log, cur_idx, &wifi_num, cur_wifi_name);
+        draw_wifi_list(&wifi_searched, 1, wifi_log, cur_idx, &wifi_num, cur_wifi_name, 0);
         printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
 
         wifi_log_clear_flag = 1; //清楚wifi消息
@@ -155,6 +158,8 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
         msleep(50);
         draw_wifi_login_page(NULL, cur_wifi_name, 0);
 
+        //重置静态变量现场
+        cur_idx = 0;
         return WIFI_LOGIN_PAGE;
 
         //跳转到连接函数，绘制连接动画
@@ -177,7 +182,7 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
             cur_idx = wifi_num;
         }
 
-        draw_wifi_list(&wifi_searched, 0, wifi_log, cur_idx, &wifi_num, cur_wifi_name);
+        draw_wifi_list(&wifi_searched, 0, wifi_log, cur_idx, &wifi_num, cur_wifi_name, 0);
         printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
 
         draw_button(242, 24, 312, 86,
@@ -197,7 +202,7 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
             cur_idx = 0;
         }
 
-        draw_wifi_list(&wifi_searched, 0, wifi_log, cur_idx, &wifi_num, cur_wifi_name);
+        draw_wifi_list(&wifi_searched, 0, wifi_log, cur_idx, &wifi_num, cur_wifi_name, 0);
         printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
 
         draw_button(242, 94, 312, 156,
@@ -213,7 +218,6 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
 
         //重置静态变量现场
         cur_idx = 0;
-        wifi_searched = 0;
 
         draw_start_page();
 
@@ -283,6 +287,9 @@ uint8_t wifi_login_operation(uint8_t *connect_server, uint8_t *pic_download)
 {
     static int8_t key_value = 0;
     static uint8_t shift_on = 0;
+    static uint8_t passwd[20] = {'\0'};
+    static uint8_t passwd_count = 0;
+    uint8_t wifi_msg[70] = {'\0'};
 
     if(shift_on == 0)
     {
@@ -293,9 +300,47 @@ uint8_t wifi_login_operation(uint8_t *connect_server, uint8_t *pic_download)
     }
     if(g_count == 1)
     {
-        printf("curr_column = %d, curr_row = %d, key_value = %d\n", curr_column, curr_row, key_value);
         switch(key_value)
         {
+            case -1:
+                if(passwd_count > 0)
+                {
+                    passwd_count--;
+                    passwd[passwd_count] = '\0';
+                }
+
+                break;
+            case -2:
+                //TODO:这里设置为一个函数，函数返回成功后，connect_server置位，并跳转到连接成功画面，并且wifi密码加密后保存到flash中，读取时解密
+                //连接wifi
+                sprintf(wifi_msg, "AT+CWJAP_DEF=\"%s\",\"%s\"\r\n", cur_wifi_name, passwd);
+                wifi_send_cmd(wifi_msg);
+                sleep(10);
+                wifi_log_clear_flag = 1;
+
+                //设置透传模式
+                memset(wifi_msg, '\0', sizeof(wifi_msg));
+                //TODO:需要增加port和ip的输入控制
+                sprintf(wifi_msg, "AT+SAVETRANSLINK=1,\"192.168.31.56\",43200,\"TCP\"\r\n");
+                wifi_send_cmd(wifi_msg);
+                sleep(5);
+                wifi_log_clear_flag = 1;
+
+                //重启wifi模块
+                wifi_send_cmd("AT+RST\r\n");
+                sleep(5);
+                wifi_log_clear_flag = 1;
+
+                //测试，等待透传的数据并打印
+                sleep(10);
+                printf("wifi_log = %s\n", wifi_log);
+
+                //FIXME:透传模式下，此时应当禁止WIFI Search和wifi connect，并且显示服务器连接成功
+                //FIXME:此时应当再增加一个界面显示连接状态，代替原先的connect server界面，增加断开连接按钮，按钮按下后断开连接
+                //并恢复原画面
+                //TODO:需要增加服务器断开按钮
+
+                break;
             case -3:
                 if(shift_on == 0)
                 {
@@ -308,16 +353,24 @@ uint8_t wifi_login_operation(uint8_t *connect_server, uint8_t *pic_download)
                 }
                 break;
             case -4:
-                draw_connect_server_page();
+                draw_connect_server_page(connect_server, &wifi_searched, &wifi_num);
                 shift_on = 0;
                 key_value = 0;
                 curr_row = 0;
                 curr_column = 0;
+                memset(passwd, '\0', sizeof(passwd));
+                passwd_count = 0;
                 return CONNECT_SERVER_PAGE;
                 break;
             default:
+                if(passwd_count < sizeof(passwd))
+                {
+                    passwd[passwd_count] = '\0' + key_value;
+                    passwd_count++;
+                }
                 break;
         }
+        draw_button(60, 45, 260, 75, 2, BUTTON_BOUNDARY_COLOR, WHITE, passwd, BUTTON_CHAR_COLOR);
     }
 
     return WIFI_LOGIN_PAGE;

@@ -52,15 +52,18 @@ void draw_wifi_list(uint8_t *wifi_searched,
                     uint8_t *info,
                     uint8_t choose_idx,
                     uint8_t *wifi_num,
-                    uint8_t *wifi_name);
+                    uint8_t *wifi_name,
+                    uint8_t wifi_log_reload);
 int draw_button(uint16_t x1, uint16_t y1,
                 uint16_t x2, uint16_t y2,
                 uint16_t width,
                 uint16_t color,
                 uint16_t fill_color,
-                char *str, uint16_t str_color);
+                uint8_t *str, uint16_t str_color);
 void draw_start_page();
-void draw_connect_server_page();
+void draw_connect_server_page(uint8_t *connect_server,
+                         uint8_t *wifi_searched,
+                         uint8_t *wifi_num);
 void draw_wifi_login_key_page1(uint8_t curr_row,
                                uint8_t curr_column,
                                int8_t *value,

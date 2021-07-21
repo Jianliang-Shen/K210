@@ -22,6 +22,8 @@
 #define KEY_REPORT_LONG     (1<<2)         // 上报长按事件
 #define KEY_REPORT_REPEAT   (1<<3)         // 上报连发事件
 
+extern uint8_t keypad_flag;
+
 /* 定义按键事件*/
 typedef enum _keypad_status_t
 {

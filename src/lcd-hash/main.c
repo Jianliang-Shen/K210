@@ -14,43 +14,9 @@
 #include "w25qxx.h"
 #include "wifi.h"
 
-#define SET_PASSWD 0
-#define SET_IP 1
-#define SET_PORT 2
-#define CONNECT_WIFI 3
-
 corelock_t lock;
-uint8_t wifi_log[MAX_WIFI_LOG_SIZE];
-uint8_t wifi_log_clear_flag = 0;
 
-uint8_t keypad_flag = 0;
-int8_t curr_row = 0, curr_column = 0;
-
-uint32_t g_count = 0;
-
-uint8_t wifi_searched = 0;
-uint8_t wifi_num = 0;
-uint8_t cur_wifi_name[16] = {'\0'};
-
-// uint8_t passwd[20] = {'\0'};
-// uint8_t passwd_idx = 0;
-
-// uint8_t server_ip[15] = {'\0'};
-// uint8_t server_ip_idx = 0;
-
-// uint8_t server_port[5] = {'\0'};
-// uint8_t server_port_idx = 0;
-
-uint8_t passwd[20] = "88888888";
-uint8_t passwd_idx = 8;
-
-uint8_t server_ip[16] = "172.20.10.6";
-uint8_t server_ip_idx = 11;
-
-uint8_t server_port[6] = "8086";
-uint8_t server_port_idx = 4;
-
-uint8_t wifi_login_enter_flag = SET_PORT;
+uint32_t key_count = 0;
 
 // #define BUF_LENGTH (40 * 1024 + 5)
 // #define DATA_ADDRESS 0xB00000
@@ -119,10 +85,10 @@ void init_key(void)
     /* 设置按键的GPIO电平触发模式为上升沿和下降沿 */
     gpiohs_set_pin_edge(KEY_GPIONUM, GPIO_PE_FALLING);
     /* 设置按键GPIO口的中断回调 */
-    gpiohs_irq_register(KEY_GPIONUM, 1, key_irq_cb, &g_count);
+    gpiohs_irq_register(KEY_GPIONUM, 1, key_irq_cb, &key_count);
 }
 
-uint8_t start_page_operation(uint8_t *connect_server, uint8_t *pic_download)
+uint8_t start_page_operation(uint8_t *pic_download)
 {
     if(BUTTON_1_X1 < ft6236.touch_x && ft6236.touch_x < BUTTON_1_X2 &&
        BUTTON_1_Y1 < ft6236.touch_y && ft6236.touch_y < BUTTON_1_Y2)
@@ -132,7 +98,7 @@ uint8_t start_page_operation(uint8_t *connect_server, uint8_t *pic_download)
                     "1.Connect Server", BUTTON_CHAR_COLOR);
         msleep(50);
 
-        draw_connect_server_page(connect_server, &wifi_searched, &wifi_num, cur_wifi_name, server_ip, server_port);
+        draw_connect_server_page();
         return CONNECT_SERVER_PAGE;
     } else if(BUTTON_2_X1 < ft6236.touch_x && ft6236.touch_x < BUTTON_2_X2 &&
               BUTTON_2_Y1 < ft6236.touch_y && ft6236.touch_y < BUTTON_2_Y2)
@@ -156,7 +122,7 @@ uint8_t start_page_operation(uint8_t *connect_server, uint8_t *pic_download)
                     BUTTON_BOUNDARY_WIDTH, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
                     "3.Open picture", BUTTON_CHAR_COLOR);
         msleep(50);
-        lcd_draw_picture_half(0, 0, 320, 240, gImage_logo);
+        lcd_draw_picture_half(0, 0, 320, 240, picture_data);
 
         // if(pic_download != PIC_DONWLOAD_OK)
         // {
@@ -170,11 +136,11 @@ uint8_t start_page_operation(uint8_t *connect_server, uint8_t *pic_download)
     return START_PAGE;
 }
 
-uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
+uint8_t connect_server_operation(uint8_t *pic_download)
 {
     static int8_t cur_idx = 0; //index 从0开始计数，最大值为 MAX_WIFI_NUM - 1
 
-    if(*connect_server != CONNECT_SERVER_OK)
+    if(connect_server != CONNECT_SERVER_OK)
     {
         //如果按下搜寻wifi的按钮
         if(8 < ft6236.touch_x && ft6236.touch_x < 156 &&
@@ -195,8 +161,8 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
             cur_idx = 0;
 
             //打印wifi列表
-            draw_wifi_list(&wifi_searched, 1, wifi_log, cur_idx, &wifi_num, cur_wifi_name, 0);
-            printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
+            draw_wifi_list(1, wifi_log, cur_idx, 0);
+            printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, wifi_name);
 
             wifi_log_clear_flag = 1; //清楚wifi消息
 
@@ -215,7 +181,7 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
                         2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
                         "Connect", BUTTON_CHAR_COLOR);
             msleep(50);
-            draw_wifi_login_page(NULL, cur_wifi_name, passwd, server_port, server_ip, 0);
+            draw_wifi_login_page();
 
             //重置静态变量现场
             cur_idx = 0;
@@ -241,8 +207,8 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
                 cur_idx = wifi_num;
             }
 
-            draw_wifi_list(&wifi_searched, 0, wifi_log, cur_idx, &wifi_num, cur_wifi_name, 0);
-            printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
+            draw_wifi_list(0, wifi_log, cur_idx, 0);
+            printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, wifi_name);
 
             draw_button(242, 24, 312, 86,
                         2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR,
@@ -261,8 +227,8 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
                 cur_idx = 0;
             }
 
-            draw_wifi_list(&wifi_searched, 0, wifi_log, cur_idx, &wifi_num, cur_wifi_name, 0);
-            printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
+            draw_wifi_list(0, wifi_log, cur_idx, 0);
+            printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, wifi_name);
 
             draw_button(242, 94, 312, 156,
                         2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR,
@@ -295,9 +261,9 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
             cur_idx = 0;
 
             server_disconnect(connect_server);
-            draw_connect_server_page(connect_server, &wifi_searched, &wifi_num, cur_wifi_name, server_ip, server_port);
+            draw_connect_server_page();
 
-            printf("wifi disconnect end, connect_server = %d\n", *connect_server);
+            printf("wifi disconnect end, connect_server = %d\n", connect_server);
 
             return CONNECT_SERVER_PAGE;
         }
@@ -378,7 +344,7 @@ void key_middle(void *arg)
     curr_column = curr_column > row_nums[curr_row] ? row_nums[curr_row] : curr_column;
 }
 
-uint8_t wifi_login_operation(uint8_t *connect_server, uint8_t *pic_download)
+uint8_t wifi_login_operation(uint8_t *pic_download)
 {
     static int8_t key_value = 0;
     static uint8_t shift_on = 0;
@@ -390,7 +356,7 @@ uint8_t wifi_login_operation(uint8_t *connect_server, uint8_t *pic_download)
     {
         draw_wifi_login_key_page2(curr_row, curr_column, &key_value, 1);
     }
-    if(g_count == 1)
+    if(key_count == 1)
     {
         switch(key_value)
         {
@@ -430,8 +396,8 @@ uint8_t wifi_login_operation(uint8_t *connect_server, uint8_t *pic_download)
                 if(wifi_login_enter_flag == CONNECT_WIFI)
                 {
                     wifi_login_enter_flag--;
-                    server_connect(cur_wifi_name, passwd, server_port, server_ip, &wifi_log_clear_flag, wifi_log, connect_server);
-                    printf("wifi connect end, connect_server = %d\n", *connect_server);
+                    server_connect();
+                    printf("wifi connect end, connect_server = %d\n", connect_server);
                 }
                 break;
             case -3:
@@ -446,7 +412,7 @@ uint8_t wifi_login_operation(uint8_t *connect_server, uint8_t *pic_download)
                 }
                 break;
             case -4:
-                draw_connect_server_page(connect_server, &wifi_searched, &wifi_num, cur_wifi_name, server_ip, server_port);
+                draw_connect_server_page();
                 shift_on = 0;
                 key_value = 0;
                 curr_row = 0;
@@ -479,9 +445,9 @@ uint8_t wifi_login_operation(uint8_t *connect_server, uint8_t *pic_download)
             draw_button(95, 48, 290, 72, 1, WHITE, WHITE, server_ip, BUTTON_CHAR_COLOR);
         if(wifi_login_enter_flag == SET_PORT)
             draw_button(95, 73, 290, 97, 1, WHITE, WHITE, server_port, BUTTON_CHAR_COLOR);
-        if(*connect_server == CONNECT_SERVER_OK)
+        if(connect_server == CONNECT_SERVER_OK)
         {
-            draw_connect_server_page(connect_server, &wifi_searched, &wifi_num, cur_wifi_name, server_ip, server_port);
+            draw_connect_server_page();
             return CONNECT_SERVER_PAGE;
         }
     }
@@ -489,7 +455,7 @@ uint8_t wifi_login_operation(uint8_t *connect_server, uint8_t *pic_download)
     return WIFI_LOGIN_PAGE;
 }
 
-uint8_t pic_download_operation(uint8_t *connect_server, uint8_t *pic_download)
+uint8_t pic_download_operation(uint8_t *pic_download)
 {
     // if () //如果按下下载按钮
     // {
@@ -512,7 +478,7 @@ uint8_t pic_download_operation(uint8_t *connect_server, uint8_t *pic_download)
     // return PIC_DOWNLOAD_PAGE;
 }
 
-uint8_t open_picture_operation(uint8_t *connect_server, uint8_t *pic_download)
+uint8_t open_picture_operation(uint8_t *pic_download)
 {
     // if () //如果按下打开按钮
     // {
@@ -611,7 +577,6 @@ int main(void)
 
     uint8_t page_state = START_PAGE;
 
-    uint8_t connect_server = 0;
     uint8_t pic_download = 0;
 
     /* 设置新PLL0频率 */
@@ -626,7 +591,7 @@ int main(void)
 
     while(1)
     {
-        if(ft6236.touch_state & TP_COORD_UD || keypad_flag == 1 || g_count == 1)
+        if(ft6236.touch_state & TP_COORD_UD || keypad_flag == 1 || key_count == 1)
         {
             ft6236.touch_state &= ~TP_COORD_UD;
             ft6236_scan();
@@ -635,19 +600,19 @@ int main(void)
             switch(page_state)
             {
                 case START_PAGE:
-                    page_state = start_page_operation(&connect_server, &pic_download);
+                    page_state = start_page_operation(&pic_download);
                     break;
                 case CONNECT_SERVER_PAGE:
-                    page_state = connect_server_operation(&connect_server, &pic_download);
+                    page_state = connect_server_operation(&pic_download);
                     break;
                 case PIC_DOWNLOAD_PAGE:
-                    page_state = pic_download_operation(&connect_server, &pic_download);
+                    page_state = pic_download_operation(&pic_download);
                     break;
                 case OPEN_PICTURE_PAGE:
-                    page_state = open_picture_operation(&connect_server, &pic_download);
+                    page_state = open_picture_operation(&pic_download);
                     break;
                 case WIFI_LOGIN_PAGE:
-                    page_state = wifi_login_operation(&connect_server, &pic_download);
+                    page_state = wifi_login_operation(&pic_download);
                     break;
                 case ERROR_PAGE:
                     page_state = error_operation();
@@ -659,7 +624,7 @@ int main(void)
         }
         ft6236.touch_state &= ~TP_COORD_UD;
         keypad_flag = 0;
-        g_count = 0;
+        key_count = 0;
 
         msleep(50);
     }

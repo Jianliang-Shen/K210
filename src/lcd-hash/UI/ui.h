@@ -46,13 +46,18 @@
 #define OPEN_PICTURE_PAGE 3
 #define WIFI_LOGIN_PAGE 4
 
+#define SET_PASSWD 0
+#define SET_IP 1
+#define SET_PORT 2
+#define CONNECT_WIFI 3
+
 #define ERROR_PAGE 255
-void draw_wifi_list(uint8_t *wifi_searched,
-                    uint8_t wifi_updated,
+
+extern int8_t curr_row, curr_column;
+
+void draw_wifi_list(uint8_t wifi_updated,
                     uint8_t *info,
                     uint8_t choose_idx,
-                    uint8_t *wifi_num,
-                    uint8_t *wifi_name,
                     uint8_t wifi_log_reload);
 int draw_button(uint16_t x1, uint16_t y1,
                 uint16_t x2, uint16_t y2,
@@ -61,12 +66,7 @@ int draw_button(uint16_t x1, uint16_t y1,
                 uint16_t fill_color,
                 uint8_t *str, uint16_t str_color);
 void draw_start_page();
-void draw_connect_server_page(uint8_t *connect_server,
-                              uint8_t *wifi_searched,
-                              uint8_t *wifi_num,
-                              uint8_t *wifi_name,
-                              uint8_t *server_ip,
-                              uint8_t *server_port);
+void draw_connect_server_page();
 void draw_wifi_login_key_page1(uint8_t curr_row,
                                uint8_t curr_column,
                                int8_t *value,
@@ -75,12 +75,7 @@ void draw_wifi_login_key_page2(uint8_t curr_row,
                                uint8_t curr_column,
                                int8_t *value,
                                uint8_t page_status);
-void draw_wifi_login_page(uint8_t *wifi_connected,
-                          uint8_t *wifi_name,
-                          uint8_t *wifi_passwd,
-                          uint8_t *server_port,
-                          uint8_t *server_ip,
-                          uint8_t page_num);
+void draw_wifi_login_page();
 void draw_pic_download_page();
 void draw_open_pic_page();
 void draw_error_page(char *error_info);

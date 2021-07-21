@@ -3,6 +3,7 @@
 #include "timer.h"
 #include "pin_config.h"
 
+uint8_t keypad_flag = 0;
 keypad_fifo_t keypad_fifo;         // 按键缓冲FIFO
 keypad_t keypad[EN_KEY_ID_MAX];
 

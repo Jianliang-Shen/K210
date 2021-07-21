@@ -41,7 +41,7 @@
 #define PINK        0xF81F
 #define USER_COLOR  0xAA55
 
-extern const unsigned char gImage_logo[153608];
+extern const unsigned char picture_data[153608];
 
 /* LCD显示方向 */
 typedef enum _lcd_dir

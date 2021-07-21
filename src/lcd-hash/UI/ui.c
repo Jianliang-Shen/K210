@@ -9,12 +9,11 @@
 #include "ui.h"
 #include "wifi.h"
 
-void draw_wifi_list(uint8_t *wifi_searched,
-                    uint8_t wifi_updated,
+int8_t curr_row = 0, curr_column = 0;
+
+void draw_wifi_list(uint8_t wifi_updated,
                     uint8_t *info,
                     uint8_t choose_idx,
-                    uint8_t *wifi_num,
-                    uint8_t *wifi_name,
                     uint8_t wifi_log_reload)
 {
     static uint8_t str[8][20];
@@ -71,8 +70,8 @@ void draw_wifi_list(uint8_t *wifi_searched,
         }
         if(column >= 0)
         {
-            *wifi_num = column;
-            *wifi_searched = 1;
+            wifi_num = column;
+            wifi_searched = 1;
         } else
         {
             printf("No wifi searched!\n");
@@ -80,10 +79,10 @@ void draw_wifi_list(uint8_t *wifi_searched,
     }
 
     // 如果搜索到wifi，则开始绘制wifi列表
-    if(*wifi_searched == 1)
+    if(wifi_searched == 1)
     {
         uint8_t tmp_idx = now_grey_idx;
-        for(uint8_t i = 0; i <= *wifi_num; i++)
+        for(uint8_t i = 0; i <= wifi_num; i++)
         {
             //如果已经画完，局部刷新
             if(drawed_flag)
@@ -164,16 +163,11 @@ void draw_start_page()
                 BUTTON_BOUNDARY_WIDTH, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "3.Open picture", BUTTON_CHAR_COLOR);
 }
 
-void draw_connect_server_page(uint8_t *connect_server,
-                              uint8_t *wifi_searched,
-                              uint8_t *wifi_num,
-                              uint8_t *wifi_name,
-                              uint8_t *server_ip,
-                              uint8_t *server_port)
+void draw_connect_server_page()
 {
     lcd_clear(BACKGROUND_COLOR);
 
-    if(*connect_server != CONNECT_SERVER_OK)
+    if(connect_server != CONNECT_SERVER_OK)
     {
         draw_page_title("Connect Server", TITLE_COLOR);
 
@@ -193,12 +187,12 @@ void draw_connect_server_page(uint8_t *connect_server,
         //draw back button
         draw_button(BACK_BUTTON_X1, BACK_BUTTON_Y1, BACK_BUTTON_X2, BACK_BUTTON_Y2,
                     2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "BACK", BUTTON_CHAR_COLOR);
-        if(*wifi_searched)
+        if(wifi_searched)
         {
             //绘制连接按钮
             draw_button(164, 164, 312, 194,
                         2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "Connect", BUTTON_CHAR_COLOR);
-            draw_wifi_list(wifi_searched, 0, NULL, 0, wifi_num, NULL, 1);
+            draw_wifi_list(0, NULL, 0, 1);
         } else
         {
             //绘制连接按钮，默认无效
@@ -661,12 +655,7 @@ void draw_wifi_login_key_page2(uint8_t curr_row, uint8_t curr_column, int8_t *va
     old_column = curr_column;
 }
 
-void draw_wifi_login_page(uint8_t *wifi_connected,
-                          uint8_t *wifi_name,
-                          uint8_t *wifi_passwd,
-                          uint8_t *server_port,
-                          uint8_t *server_ip,
-                          uint8_t page_num)
+void draw_wifi_login_page()
 {
 
     uint8_t title[35] = {'\0'};
@@ -679,7 +668,7 @@ void draw_wifi_login_page(uint8_t *wifi_connected,
     draw_button(45, 50, 90, 70, 2, WHITE, WHITE, "ip", BLUE);
     draw_button(45, 75, 90, 95, 2, WHITE, WHITE, "port", BLUE);
 
-    draw_button(95, 33, 290, 47, 1, WHITE, WHITE, wifi_passwd, BUTTON_CHAR_COLOR);
+    draw_button(95, 33, 290, 47, 1, WHITE, WHITE, passwd, BUTTON_CHAR_COLOR);
     draw_button(95, 48, 290, 72, 1, WHITE, WHITE, server_ip, BUTTON_CHAR_COLOR);
     draw_button(95, 73, 290, 97, 1, WHITE, WHITE, server_port, BUTTON_CHAR_COLOR);
 

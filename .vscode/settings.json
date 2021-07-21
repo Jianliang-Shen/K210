@@ -64,6 +64,7 @@
         "ui.h": "c",
         "string_view": "c",
         "string": "c",
-        "pin_config.h": "c"
+        "pin_config.h": "c",
+        "uarths.h": "c"
     }
 }

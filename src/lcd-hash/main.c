@@ -9,8 +9,15 @@
 #include "st7789.h"
 #include "string.h"
 #include "sysctl.h"
+#include "uarths.h"
 #include "ui.h"
+#include "w25qxx.h"
 #include "wifi.h"
+
+#define SET_PASSWD 0
+#define SET_IP 1
+#define SET_PORT 2
+#define CONNECT_WIFI 3
 
 corelock_t lock;
 uint8_t wifi_log[MAX_WIFI_LOG_SIZE];
@@ -20,9 +27,58 @@ uint8_t keypad_flag = 0;
 int8_t curr_row = 0, curr_column = 0;
 
 uint32_t g_count = 0;
+
 uint8_t wifi_searched = 0;
 uint8_t wifi_num = 0;
 uint8_t cur_wifi_name[16] = {'\0'};
+
+// uint8_t passwd[20] = {'\0'};
+// uint8_t passwd_idx = 0;
+
+// uint8_t server_ip[15] = {'\0'};
+// uint8_t server_ip_idx = 0;
+
+// uint8_t server_port[5] = {'\0'};
+// uint8_t server_port_idx = 0;
+
+uint8_t passwd[20] = "88888888";
+uint8_t passwd_idx = 8;
+
+uint8_t server_ip[16] = "172.20.10.6";
+uint8_t server_ip_idx = 11;
+
+uint8_t server_port[6] = "8086";
+uint8_t server_port_idx = 4;
+
+uint8_t wifi_login_enter_flag = SET_PORT;
+
+// #define BUF_LENGTH (40 * 1024 + 5)
+// #define DATA_ADDRESS 0xB00000
+
+// uint8_t write_buf[BUF_LENGTH];
+// uint8_t read_buf[BUF_LENGTH];
+
+int flash_init(void)
+{
+    uint8_t manuf_id, device_id;
+    uint8_t spi_index = 3, spi_ss = 0;
+    printf("flash init \n");
+
+    w25qxx_init(spi_index, spi_ss, 60000000);
+    /* 读取flash的ID */
+    w25qxx_read_id(&manuf_id, &device_id);
+    printf("manuf_id:0x%02x, device_id:0x%02x\n", manuf_id, device_id);
+    if((manuf_id != 0xEF && manuf_id != 0xC8) || (device_id != 0x17 && device_id != 0x16))
+    {
+        /* flash初始化失败 */
+        printf("w25qxx_read_id error\n");
+        printf("manuf_id:0x%02x, device_id:0x%02x\n", manuf_id, device_id);
+        return 0;
+    } else
+    {
+        return 1;
+    }
+}
 
 void hardware_init(void)
 {
@@ -76,7 +132,7 @@ uint8_t start_page_operation(uint8_t *connect_server, uint8_t *pic_download)
                     "1.Connect Server", BUTTON_CHAR_COLOR);
         msleep(50);
 
-        draw_connect_server_page(connect_server, &wifi_searched, &wifi_num);
+        draw_connect_server_page(connect_server, &wifi_searched, &wifi_num, cur_wifi_name, server_ip, server_port);
         return CONNECT_SERVER_PAGE;
     } else if(BUTTON_2_X1 < ft6236.touch_x && ft6236.touch_x < BUTTON_2_X2 &&
               BUTTON_2_Y1 < ft6236.touch_y && ft6236.touch_y < BUTTON_2_Y2)
@@ -100,13 +156,14 @@ uint8_t start_page_operation(uint8_t *connect_server, uint8_t *pic_download)
                     BUTTON_BOUNDARY_WIDTH, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
                     "3.Open picture", BUTTON_CHAR_COLOR);
         msleep(50);
+        lcd_draw_picture_half(0, 0, 320, 240, gImage_logo);
 
-        if(pic_download != PIC_DONWLOAD_OK)
-        {
-            draw_error_page("No picture downloaded");
-            return ERROR_PAGE;
-        }
-        draw_open_pic_page();
+        // if(pic_download != PIC_DONWLOAD_OK)
+        // {
+        //     draw_error_page("No picture downloaded");
+        //     return ERROR_PAGE;
+        // }
+        // draw_open_pic_page();
         return OPEN_PICTURE_PAGE;
     }
 
@@ -117,112 +174,150 @@ uint8_t connect_server_operation(uint8_t *connect_server, uint8_t *pic_download)
 {
     static int8_t cur_idx = 0; //index 从0开始计数，最大值为 MAX_WIFI_NUM - 1
 
-    //如果按下搜寻wifi的按钮
-    if(8 < ft6236.touch_x && ft6236.touch_x < 156 &&
-       164 < ft6236.touch_y && ft6236.touch_y < 194)
+    if(*connect_server != CONNECT_SERVER_OK)
     {
-        //闪烁
-        draw_button(8, 164, 156, 194,
-                    2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
-                    "Search Wifi", BUTTON_CHAR_COLOR);
-
-        //搜寻wifi
-        wifi_send_cmd("AT+CWLAP\r\n");
-
-        //等待处理
-        sleep(2);
-
-        //重置静态变量现场
-        cur_idx = 0;
-
-        //打印wifi列表
-        draw_wifi_list(&wifi_searched, 1, wifi_log, cur_idx, &wifi_num, cur_wifi_name, 0);
-        printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
-
-        wifi_log_clear_flag = 1; //清楚wifi消息
-
-        //搜寻完毕后，按钮变正常
-        draw_button(8, 164, 156, 194,
-                    2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "Search Wifi", BUTTON_CHAR_COLOR);
-        draw_button(164, 164, 312, 194,
-                    2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "Connect", BUTTON_CHAR_COLOR);
-    }
-
-    //如果按下连接按钮
-    if(164 < ft6236.touch_x && ft6236.touch_x < 312 &&
-       164 < ft6236.touch_y && ft6236.touch_y < 194 && wifi_searched)
-    {
-        draw_button(164, 164, 312, 194,
-                    2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
-                    "Connect", BUTTON_CHAR_COLOR);
-        msleep(50);
-        draw_wifi_login_page(NULL, cur_wifi_name, 0);
-
-        //重置静态变量现场
-        cur_idx = 0;
-        return WIFI_LOGIN_PAGE;
-
-        //跳转到连接函数，绘制连接动画
-        //如果连接失败
-        // draw_error_page("connect failed");
-        // return ERROR_PAGE;
-        //如果连接成功
-        //打印连接成功的logo，在wifi后加上对勾
-    }
-
-    if(242 < ft6236.touch_x && ft6236.touch_x < 312 &&
-       24 < ft6236.touch_y && ft6236.touch_y < 86 && wifi_searched)
-    {
-        draw_button(242, 24, 312, 86,
-                    2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
-                    "up", BUTTON_CHAR_COLOR);
-        cur_idx--;
-        if(cur_idx < 0)
+        //如果按下搜寻wifi的按钮
+        if(8 < ft6236.touch_x && ft6236.touch_x < 156 &&
+           164 < ft6236.touch_y && ft6236.touch_y < 194)
         {
-            cur_idx = wifi_num;
-        }
+            //闪烁
+            draw_button(8, 164, 156, 194,
+                        2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
+                        "Search Wifi", BUTTON_CHAR_COLOR);
 
-        draw_wifi_list(&wifi_searched, 0, wifi_log, cur_idx, &wifi_num, cur_wifi_name, 0);
-        printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
+            //搜寻wifi
+            wifi_send_cmd("AT+CWLAP\r\n");
 
-        draw_button(242, 24, 312, 86,
-                    2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR,
-                    "up", BUTTON_CHAR_COLOR);
-    }
+            //等待处理
+            sleep(2);
 
-    if(242 < ft6236.touch_x && ft6236.touch_x < 312 &&
-       94 < ft6236.touch_y && ft6236.touch_y < 156 && wifi_searched)
-    {
-        draw_button(242, 94, 312, 156,
-                    2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
-                    "down", BUTTON_CHAR_COLOR);
-        cur_idx++;
-        if(cur_idx > wifi_num)
-        {
+            //重置静态变量现场
             cur_idx = 0;
+
+            //打印wifi列表
+            draw_wifi_list(&wifi_searched, 1, wifi_log, cur_idx, &wifi_num, cur_wifi_name, 0);
+            printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
+
+            wifi_log_clear_flag = 1; //清楚wifi消息
+
+            //搜寻完毕后，按钮变正常
+            draw_button(8, 164, 156, 194,
+                        2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "Search Wifi", BUTTON_CHAR_COLOR);
+            draw_button(164, 164, 312, 194,
+                        2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "Connect", BUTTON_CHAR_COLOR);
         }
 
-        draw_wifi_list(&wifi_searched, 0, wifi_log, cur_idx, &wifi_num, cur_wifi_name, 0);
-        printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
+        //如果按下连接按钮
+        if(164 < ft6236.touch_x && ft6236.touch_x < 312 &&
+           164 < ft6236.touch_y && ft6236.touch_y < 194 && wifi_searched)
+        {
+            draw_button(164, 164, 312, 194,
+                        2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
+                        "Connect", BUTTON_CHAR_COLOR);
+            msleep(50);
+            draw_wifi_login_page(NULL, cur_wifi_name, passwd, server_port, server_ip, 0);
 
-        draw_button(242, 94, 312, 156,
-                    2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR,
-                    "down", BUTTON_CHAR_COLOR);
-    }
-    if(BACK_BUTTON_X1 < ft6236.touch_x && ft6236.touch_x < BACK_BUTTON_X2 &&
-       BACK_BUTTON_Y1 < ft6236.touch_y && ft6236.touch_y < BACK_BUTTON_Y2)
+            //重置静态变量现场
+            cur_idx = 0;
+            return WIFI_LOGIN_PAGE;
+
+            //跳转到连接函数，绘制连接动画
+            //如果连接失败
+            // draw_error_page("connect failed");
+            // return ERROR_PAGE;
+            //如果连接成功
+            //打印连接成功的logo，在wifi后加上对勾
+        }
+
+        if(242 < ft6236.touch_x && ft6236.touch_x < 312 &&
+           24 < ft6236.touch_y && ft6236.touch_y < 86 && wifi_searched)
+        {
+            draw_button(242, 24, 312, 86,
+                        2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
+                        "up", BUTTON_CHAR_COLOR);
+            cur_idx--;
+            if(cur_idx < 0)
+            {
+                cur_idx = wifi_num;
+            }
+
+            draw_wifi_list(&wifi_searched, 0, wifi_log, cur_idx, &wifi_num, cur_wifi_name, 0);
+            printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
+
+            draw_button(242, 24, 312, 86,
+                        2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR,
+                        "up", BUTTON_CHAR_COLOR);
+        }
+
+        if(242 < ft6236.touch_x && ft6236.touch_x < 312 &&
+           94 < ft6236.touch_y && ft6236.touch_y < 156 && wifi_searched)
+        {
+            draw_button(242, 94, 312, 156,
+                        2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR,
+                        "down", BUTTON_CHAR_COLOR);
+            cur_idx++;
+            if(cur_idx > wifi_num)
+            {
+                cur_idx = 0;
+            }
+
+            draw_wifi_list(&wifi_searched, 0, wifi_log, cur_idx, &wifi_num, cur_wifi_name, 0);
+            printf("current index = %d, wifi_num =%d wifi name = %s\n", cur_idx, wifi_num, cur_wifi_name);
+
+            draw_button(242, 94, 312, 156,
+                        2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR,
+                        "down", BUTTON_CHAR_COLOR);
+        }
+        if(BACK_BUTTON_X1 < ft6236.touch_x && ft6236.touch_x < BACK_BUTTON_X2 &&
+           BACK_BUTTON_Y1 < ft6236.touch_y && ft6236.touch_y < BACK_BUTTON_Y2)
+        {
+            draw_button(BACK_BUTTON_X1, BACK_BUTTON_Y1, BACK_BUTTON_X2, BACK_BUTTON_Y2,
+                        2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR, "BACK", BUTTON_CHAR_COLOR);
+            msleep(50);
+
+            //重置静态变量现场
+            cur_idx = 0;
+
+            draw_start_page();
+
+            return START_PAGE;
+        }
+    } else
     {
-        draw_button(BACK_BUTTON_X1, BACK_BUTTON_Y1, BACK_BUTTON_X2, BACK_BUTTON_Y2,
-                    2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR, "BACK", BUTTON_CHAR_COLOR);
-        msleep(50);
+        if(BACK_BUTTON_X1 < ft6236.touch_x && ft6236.touch_x < BACK_BUTTON_X2 &&
+           164 < ft6236.touch_y && ft6236.touch_y < 194)
+        {
+            draw_button(BACK_BUTTON_X1, 164, BACK_BUTTON_X2, 194,
+                        2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR, "Disconnect", BUTTON_CHAR_COLOR);
+            msleep(50);
 
-        //重置静态变量现场
-        cur_idx = 0;
+            //重置静态变量现场
+            cur_idx = 0;
 
-        draw_start_page();
+            server_disconnect(connect_server);
+            draw_connect_server_page(connect_server, &wifi_searched, &wifi_num, cur_wifi_name, server_ip, server_port);
 
-        return START_PAGE;
+            printf("wifi disconnect end, connect_server = %d\n", *connect_server);
+
+            return CONNECT_SERVER_PAGE;
+        }
+
+        if(BACK_BUTTON_X1 < ft6236.touch_x && ft6236.touch_x < BACK_BUTTON_X2 &&
+           BACK_BUTTON_Y1 < ft6236.touch_y && ft6236.touch_y < BACK_BUTTON_Y2)
+        {
+            draw_button(BACK_BUTTON_X1, BACK_BUTTON_Y1, BACK_BUTTON_X2, BACK_BUTTON_Y2,
+                        2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR, "BACK", BUTTON_CHAR_COLOR);
+            msleep(50);
+
+            //重置静态变量现场
+            cur_idx = 0;
+
+            draw_start_page();
+
+            return START_PAGE;
+        }
     }
+
     return CONNECT_SERVER_PAGE;
 }
 
@@ -287,9 +382,6 @@ uint8_t wifi_login_operation(uint8_t *connect_server, uint8_t *pic_download)
 {
     static int8_t key_value = 0;
     static uint8_t shift_on = 0;
-    static uint8_t passwd[20] = {'\0'};
-    static uint8_t passwd_count = 0;
-    uint8_t wifi_msg[70] = {'\0'};
 
     if(shift_on == 0)
     {
@@ -303,43 +395,44 @@ uint8_t wifi_login_operation(uint8_t *connect_server, uint8_t *pic_download)
         switch(key_value)
         {
             case -1:
-                if(passwd_count > 0)
+                if(wifi_login_enter_flag == SET_PASSWD && passwd_idx > 0)
                 {
-                    passwd_count--;
-                    passwd[passwd_count] = '\0';
+                    passwd_idx--;
+                    passwd[passwd_idx] = '\0';
+                }
+
+                if(wifi_login_enter_flag == SET_IP && server_ip_idx > 0)
+                {
+                    server_ip_idx--;
+                    server_ip[server_ip_idx] = '\0';
+                } else if(wifi_login_enter_flag == SET_IP && server_ip_idx == 0)
+                {
+                    wifi_login_enter_flag--;
+                }
+
+                if(wifi_login_enter_flag == SET_PORT && server_port_idx > 0)
+                {
+                    server_port_idx--;
+                    server_port[server_port_idx] = '\0';
+                } else if(wifi_login_enter_flag == SET_PORT && server_port_idx == 0)
+                {
+                    wifi_login_enter_flag--;
+                }
+                if(wifi_login_enter_flag == CONNECT_WIFI)
+                {
+                    wifi_login_enter_flag--;
                 }
 
                 break;
             case -2:
-                //TODO:这里设置为一个函数，函数返回成功后，connect_server置位，并跳转到连接成功画面，并且wifi密码加密后保存到flash中，读取时解密
-                //连接wifi
-                sprintf(wifi_msg, "AT+CWJAP_DEF=\"%s\",\"%s\"\r\n", cur_wifi_name, passwd);
-                wifi_send_cmd(wifi_msg);
-                sleep(10);
-                wifi_log_clear_flag = 1;
-
-                //设置透传模式
-                memset(wifi_msg, '\0', sizeof(wifi_msg));
-                //TODO:需要增加port和ip的输入控制
-                sprintf(wifi_msg, "AT+SAVETRANSLINK=1,\"192.168.31.56\",43200,\"TCP\"\r\n");
-                wifi_send_cmd(wifi_msg);
-                sleep(5);
-                wifi_log_clear_flag = 1;
-
-                //重启wifi模块
-                wifi_send_cmd("AT+RST\r\n");
-                sleep(5);
-                wifi_log_clear_flag = 1;
-
-                //测试，等待透传的数据并打印
-                sleep(10);
-                printf("wifi_log = %s\n", wifi_log);
-
-                //FIXME:透传模式下，此时应当禁止WIFI Search和wifi connect，并且显示服务器连接成功
-                //FIXME:此时应当再增加一个界面显示连接状态，代替原先的connect server界面，增加断开连接按钮，按钮按下后断开连接
-                //并恢复原画面
-                //TODO:需要增加服务器断开按钮
-
+                //Enter 按下后光标下移一行
+                wifi_login_enter_flag++;
+                if(wifi_login_enter_flag == CONNECT_WIFI)
+                {
+                    wifi_login_enter_flag--;
+                    server_connect(cur_wifi_name, passwd, server_port, server_ip, &wifi_log_clear_flag, wifi_log, connect_server);
+                    printf("wifi connect end, connect_server = %d\n", *connect_server);
+                }
                 break;
             case -3:
                 if(shift_on == 0)
@@ -353,24 +446,44 @@ uint8_t wifi_login_operation(uint8_t *connect_server, uint8_t *pic_download)
                 }
                 break;
             case -4:
-                draw_connect_server_page(connect_server, &wifi_searched, &wifi_num);
+                draw_connect_server_page(connect_server, &wifi_searched, &wifi_num, cur_wifi_name, server_ip, server_port);
                 shift_on = 0;
                 key_value = 0;
                 curr_row = 0;
                 curr_column = 0;
-                memset(passwd, '\0', sizeof(passwd));
-                passwd_count = 0;
+                // memset(passwd, '\0', sizeof(passwd));
+                // passwd_idx = 0;
                 return CONNECT_SERVER_PAGE;
                 break;
             default:
-                if(passwd_count < sizeof(passwd))
+                if(wifi_login_enter_flag == SET_PASSWD && passwd_idx < sizeof(passwd))
                 {
-                    passwd[passwd_count] = '\0' + key_value;
-                    passwd_count++;
+                    passwd[passwd_idx] = '\0' + key_value;
+                    passwd_idx++;
+                }
+                if(wifi_login_enter_flag == SET_IP && server_ip_idx < sizeof(server_ip))
+                {
+                    server_ip[server_ip_idx] = '\0' + key_value;
+                    server_ip_idx++;
+                }
+                if(wifi_login_enter_flag == SET_PORT && server_port_idx < sizeof(server_port))
+                {
+                    server_port[server_port_idx] = '\0' + key_value;
+                    server_port_idx++;
                 }
                 break;
         }
-        draw_button(60, 45, 260, 75, 2, BUTTON_BOUNDARY_COLOR, WHITE, passwd, BUTTON_CHAR_COLOR);
+        if(wifi_login_enter_flag == SET_PASSWD)
+            draw_button(95, 33, 290, 47, 1, WHITE, WHITE, passwd, BUTTON_CHAR_COLOR);
+        if(wifi_login_enter_flag == SET_IP)
+            draw_button(95, 48, 290, 72, 1, WHITE, WHITE, server_ip, BUTTON_CHAR_COLOR);
+        if(wifi_login_enter_flag == SET_PORT)
+            draw_button(95, 73, 290, 97, 1, WHITE, WHITE, server_port, BUTTON_CHAR_COLOR);
+        if(*connect_server == CONNECT_SERVER_OK)
+        {
+            draw_connect_server_page(connect_server, &wifi_searched, &wifi_num, cur_wifi_name, server_ip, server_port);
+            return CONNECT_SERVER_PAGE;
+        }
     }
 
     return WIFI_LOGIN_PAGE;
@@ -500,6 +613,16 @@ int main(void)
 
     uint8_t connect_server = 0;
     uint8_t pic_download = 0;
+
+    /* 设置新PLL0频率 */
+    sysctl_pll_set_freq(SYSCTL_PLL0, 800000000);
+    uarths_init();
+
+    /* 初始化flash */
+    uint8_t res = 0;
+    res = flash_init();
+    if(res == 0)
+        return 0;
 
     while(1)
     {

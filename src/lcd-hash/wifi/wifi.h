@@ -19,4 +19,13 @@
 
 void wifi_module_init();
 void wifi_send_cmd(char *cmd);
+void server_connect(uint8_t *wifi_name,
+                    uint8_t *wifi_passwd,
+                    uint8_t *server_port,
+                    uint8_t *server_ip,
+                    uint8_t *wifi_log_clear_flag,
+                    uint8_t *wifi_log,
+                    uint8_t *connect_server);
+void server_disconnect(uint8_t *connect_server);
+
 #endif

@@ -111,4 +111,8 @@ void keypad_init(void);
 void scan_keypad(void);
 keypad_status_t get_keypad_state(void);
 
+void key_left(void *arg);
+void key_right(void *arg);
+void key_middle(void *arg);
+
 #endif  /* _KEYPAD_H_ */

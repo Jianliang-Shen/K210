@@ -24,13 +24,13 @@ uint8_t connect_server = 0;
 // uint8_t server_port[5] = {'\0'};
 // uint8_t server_port_idx = 0;
 
-uint8_t passwd[20] = "95898063";
+uint8_t passwd[20] = "88888888";
 uint8_t passwd_idx = 8;
 
-uint8_t server_ip[16] = "192.168.31.56";
-uint8_t server_ip_idx = 113;
+uint8_t server_ip[16] = "172.20.10.6";
+uint8_t server_ip_idx = 11;
 
-uint8_t server_port[6] = "43200";
+uint8_t server_port[6] = "36500";
 uint8_t server_port_idx = 5;
 
 uint8_t wifi_login_enter_flag = SET_PORT;

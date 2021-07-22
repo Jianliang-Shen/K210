@@ -2,6 +2,9 @@
 #include "gpiohs.h"
 #include "timer.h"
 #include "pin_config.h"
+#include "ui.h"
+#include "w25qxx.h"
+#include "wifi.h"
 
 uint8_t keypad_flag = 0;
 keypad_fifo_t keypad_fifo;         // 按键缓冲FIFO
@@ -377,4 +380,62 @@ void keypad_init(void)
     }
 
     mTimer_init();
+}
+
+
+void key_left(void *arg)
+{
+    keypad_flag = 1;
+    uint8_t row_nums[] = {12, 12, 11, 10, 1};
+    curr_column--;
+    for(int j = 0; j < 5; j++)
+    {
+        if(curr_row == j)
+        {
+            if(curr_column < 0)
+            {
+                curr_column = row_nums[j > 0 ? j - 1 : 4];
+                curr_row--;
+            }
+        }
+    }
+    if(curr_row < 0)
+    {
+        curr_row = 4;
+    }
+}
+
+void key_right(void *arg)
+{
+    keypad_flag = 1;
+    uint8_t row_nums[] = {12, 12, 11, 10, 1};
+    curr_column++;
+    for(int j = 0; j < 5; j++)
+    {
+        if(curr_row == j)
+        {
+            if(curr_column > row_nums[j])
+            {
+                curr_column = 0;
+                curr_row++;
+            }
+        }
+    }
+    if(curr_row > 4)
+    {
+        curr_row = 0;
+    }
+}
+
+void key_middle(void *arg)
+{
+    keypad_flag = 1;
+    uint8_t row_nums[] = {12, 12, 11, 10, 1};
+
+    curr_row++;
+    if(curr_row > 4)
+    {
+        curr_row = 0;
+    }
+    curr_column = curr_column > row_nums[curr_row] ? row_nums[curr_row] : curr_column;
 }

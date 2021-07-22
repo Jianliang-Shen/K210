@@ -8,6 +8,9 @@
 #include "sysctl.h"
 #include "ui.h"
 #include "wifi.h"
+#include "save_data.h"
+#include "operation.h"
+#include "w25qxx.h"
 
 int8_t curr_row = 0, curr_column = 0;
 
@@ -688,11 +691,12 @@ void draw_pic_download_page()
 void draw_open_pic_page()
 {
     lcd_clear(BACKGROUND_COLOR);
-    draw_page_title("Open picture", TITLE_COLOR);
+    
+    w25qxx_read_data(PIC_ADDRESS, tmp, sizeof(tmp));
+    printf("picture readed from flash\n");
+    lcd_draw_picture_half(0, 0, 320, 240, tmp);
 
-    //draw title
-    //draw load pic button
-    //draw back button
+    draw_page_title("Touch anywhere to BACK", TITLE_COLOR);
 }
 
 void draw_error_page(char *error_info)

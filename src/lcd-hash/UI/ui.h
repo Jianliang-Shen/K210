@@ -54,7 +54,7 @@
 #define ERROR_PAGE 255
 
 extern int8_t curr_row, curr_column;
-
+void draw_process_bar(uint8_t *name, uint8_t second);
 void draw_wifi_list(uint8_t wifi_updated,
                     uint8_t *info,
                     uint8_t choose_idx,

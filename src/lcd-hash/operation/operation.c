@@ -270,8 +270,8 @@ uint8_t wifi_login_operation()
                 if(wifi_login_enter_flag == CONNECT_WIFI)
                 {
                     wifi_login_enter_flag--;
-                    server_connect();
-                    printf("wifi connect end, connect_server = %d\n", connect_server);
+                    return server_connect();
+                    // printf("wifi connect end, connect_server = %d\n", connect_server);
                 }
                 break;
             case -3:
@@ -319,11 +319,11 @@ uint8_t wifi_login_operation()
             draw_button(95, 48, 290, 72, 1, WHITE, WHITE, server_ip, BUTTON_CHAR_COLOR);
         if(wifi_login_enter_flag == SET_PORT)
             draw_button(95, 73, 290, 97, 1, WHITE, WHITE, server_port, BUTTON_CHAR_COLOR);
-        if(connect_server == CONNECT_SERVER_OK)
-        {
-            draw_connect_server_page();
-            return CONNECT_SERVER_PAGE;
-        }
+        // if(connect_server == CONNECT_SERVER_OK)
+        // {
+        //     draw_connect_server_page();
+        //     return CONNECT_SERVER_PAGE;
+        // }
     }
 
     return WIFI_LOGIN_PAGE;
@@ -349,7 +349,19 @@ uint8_t pic_download_operation()
     //     draw_start_page();
     //     return START_PAGE;
     // }
-    // return PIC_DOWNLOAD_PAGE;
+
+    if(BACK_BUTTON_X1 < ft6236.touch_x && ft6236.touch_x < BACK_BUTTON_X2 &&
+       BACK_BUTTON_Y1 < ft6236.touch_y && ft6236.touch_y < BACK_BUTTON_Y2)
+    {
+        draw_button(BACK_BUTTON_X1, BACK_BUTTON_Y1, BACK_BUTTON_X2, BACK_BUTTON_Y2,
+                    2, BUTTON_BOUNDARY_COLOR, BUTTON_TRIGGER_COLOR, "BACK", BUTTON_CHAR_COLOR);
+        msleep(50);
+
+        draw_start_page();
+
+        return START_PAGE;
+    }
+    return PIC_DOWNLOAD_PAGE;
 }
 
 uint8_t open_picture_operation()

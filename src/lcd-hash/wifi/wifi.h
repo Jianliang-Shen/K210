@@ -46,9 +46,11 @@ extern uint8_t wifi_login_enter_flag;
 extern uint8_t wifi_log[MAX_WIFI_LOG_SIZE];
 extern uint8_t wifi_log_clear_flag;
 
+int8_t *GetNext(char *match);
+int8_t KMP(char *src, char *match);
 void wifi_module_init();
 void wifi_send_cmd(char *cmd);
-void server_connect();
+uint8_t server_connect();
 void server_disconnect();
 
 #endif

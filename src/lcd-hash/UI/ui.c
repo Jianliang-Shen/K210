@@ -1,19 +1,35 @@
 #include "ft6236u.h"
 #include "gpiohs.h"
 #include "lcd.h"
+#include "operation.h"
 #include "pin_config.h"
+#include "save_data.h"
 #include "sleep.h"
 #include "st7789.h"
 #include "stdio.h"
 #include "sysctl.h"
 #include "ui.h"
-#include "wifi.h"
-#include "save_data.h"
-#include "operation.h"
 #include "w25qxx.h"
+#include "wifi.h"
 
 int8_t curr_row = 0, curr_column = 0;
 
+void draw_process_bar(uint8_t *name, uint8_t second)
+{
+    draw_button(40, 80, 280, 110,
+                2, BLACK, WHITE, name, BUTTON_CHAR_COLOR);
+    draw_button(40, 108, 280, 160,
+                2, BLACK, WHITE, "", BUTTON_CHAR_COLOR);
+    draw_button(78, 120, 242, 150,
+                2, BLACK, WHITE, "", BUTTON_CHAR_COLOR);
+    uint16_t loop = second * 1000;
+    for(uint8_t i = 0; i < 20; i++)
+    {
+        draw_button(80 + i * 8, 122, 88 + i * 8, 148,
+                    2, GREEN, GREEN, "", BUTTON_CHAR_COLOR);
+        msleep(second * 1000 / 24);
+    }
+}
 void draw_wifi_list(uint8_t wifi_updated,
                     uint8_t *info,
                     uint8_t choose_idx,
@@ -682,16 +698,27 @@ void draw_pic_download_page()
 {
     lcd_clear(BACKGROUND_COLOR);
     draw_page_title("Download picture", TITLE_COLOR);
-    //draw_title
-    //draw start button
-    //draw check button
-    //draw back button
+
+    draw_button(8, 24, 156, 105,
+                2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "Load picture", BUTTON_CHAR_COLOR);
+
+    draw_button(164, 24, 312, 105,
+                2, LIGHTGREY, DARKGREY, "Load Hash", BUTTON_CHAR_COLOR);
+
+    draw_button(8, 113, 156, 194,
+                2, LIGHTGREY, DARKGREY, "Check hash", BUTTON_CHAR_COLOR);
+
+    draw_button(164, 113, 312, 194,
+                2, LIGHTGREY, DARKGREY, "Identify", BUTTON_CHAR_COLOR);
+
+    draw_button(BACK_BUTTON_X1, BACK_BUTTON_Y1, BACK_BUTTON_X2, BACK_BUTTON_Y2,
+                2, BUTTON_BOUNDARY_COLOR, BUTTON_NORMAL_COLOR, "BACK", BUTTON_CHAR_COLOR);
 }
 
 void draw_open_pic_page()
 {
     lcd_clear(BACKGROUND_COLOR);
-    
+
     w25qxx_read_data(PIC_ADDRESS, tmp, sizeof(tmp));
     printf("picture readed from flash\n");
     lcd_draw_picture_half(0, 0, 320, 240, tmp);

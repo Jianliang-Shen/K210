@@ -719,7 +719,7 @@ void draw_open_pic_page()
 {
     lcd_clear(BACKGROUND_COLOR);
 
-    w25qxx_read_data(PIC_ADDRESS, tmp, sizeof(tmp));
+    w25qxx_read_data(PIC_ADDRESS, tmp, sizeof(tmp),W25QXX_QUAD);
     printf("picture readed from flash\n");
     lcd_draw_picture_half(0, 0, 320, 240, tmp);
 

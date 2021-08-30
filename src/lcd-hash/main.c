@@ -156,7 +156,7 @@ int main(void)
     wifi_module_init();
     register_core1(core1_main, NULL);
 
-    w25qxx_write_data(PIC_ADDRESS, picture_data, sizeof(picture_data));
+    w25qxx_write_data(PIC_ADDRESS, gImage_picture_data, sizeof(gImage_picture_data));
     printf("picture writed to flash\n");
 
     while(1)
